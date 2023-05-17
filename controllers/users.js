@@ -6,7 +6,7 @@ const getUsers = (req, res) => {
     .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
 };
 
-const getUsersById = (req, res) => {
+const getUserById = (req, res) => {
   const { userId } = req.params;
 
   User.findById(userId)
@@ -14,7 +14,7 @@ const getUsersById = (req, res) => {
       if (!user) {
         return res.status(404).send({ message: 'Пользователь с таким id не найден' });
       }
-      res.send(user);
+      res.send({ data: user });
     })
     .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
 };
@@ -22,9 +22,14 @@ const getUsersById = (req, res) => {
 const postUsers = (req, res) => {
   const { name, about, avatar } = req.body;
 
+  if (!name || !about) {
+    res.status(400).send({ message: 'Переданы некорректные данные пользователя' });
+    return;
+  }
+
   User.create({ name, about, avatar })
-    .then((user) => res.send({ data: user }))
-    .catch(() => res.status(400).send({ message: 'Переданы некорректные данные пользователя' }));
+    .then((user) => res.status(201).send({ data: user }))
+    .catch(() => res.status(500).send({ message: 'На сервере произошла ошибка' }));
 };
 
 const updateUsersProfile = (req, res) => {
@@ -55,13 +60,18 @@ const updateUsersAvatar = (req, res) => {
       upsert: false,
     },
   )
-    .then((link) => res.send({ data: link }))
-    .catch(() => res.status(400).send({ message: 'Переданы некорректные данные обновления аватара' }));
+    .then((user) => {
+      if (!user) {
+        return res.status(404).send({ message: 'Пользователь не найден' });
+      }
+      res.send({ data: user.avatar });
+    })
+    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
 };
 
 module.exports = {
   getUsers,
-  getUsersById,
+  getUserById,
   postUsers,
   updateUsersProfile,
   updateUsersAvatar,
