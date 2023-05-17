@@ -9,6 +9,10 @@ const getUsers = (req, res) => {
 const getUserById = (req, res) => {
   const { userId } = req.params;
 
+  if (!userId || !isValidObjectId(userId)) {
+    return res.status(400).send({ message: 'Некорректный формат ID пользователя' });
+  }
+
   User.findById(userId)
     .then((user) => {
       if (!user) {
