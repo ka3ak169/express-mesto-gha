@@ -3,7 +3,7 @@ const User = require('../models/user');
 const getUsers = (req, res) => {
   User.find({})
     .then((users) => res.send(users))
-    .catch((err) => res.status(500).send({ message: 'Произошла ошибка' }))
+    .catch((err) => res.status(500).send({ message: 'Произошла ошибка' }));
 };
 
 const getUsersById = (req, res) => {
@@ -11,21 +11,20 @@ const getUsersById = (req, res) => {
 
   User.findById(userId)
     .then((user) => {
-      if(!user) {
-        return res.status(404).send({ message: 'Пользователь с таким id не найден' })
-      } else {
-        res.send(user)
+      if (!user) {
+        return res.status(404).send({ message: 'Пользователь с таким id не найден' });
       }
+      res.send(user);
     })
-    .catch((err) => res.status(500).send({ message: 'Произошла ошибка' }))
+    .catch((err) => res.status(500).send({ message: 'Произошла ошибка' }));
 };
 
 const postUsers = (req, res) => {
   const { name, about, avatar } = req.body;
 
   User.create({ name, about, avatar })
-    .then(user => res.send({ data: user }))
-    .catch(err => res.status(400).send({ message: 'Переданы некорректные данные пользователя' }));
+    .then((user) => res.send({ data: user }))
+    .catch((err) => res.status(400).send({ message: 'Переданы некорректные данные пользователя' }));
 };
 
 const updateUsersProfile = (req, res) => {
@@ -37,11 +36,11 @@ const updateUsersProfile = (req, res) => {
     {
       new: true, // обработчик then получит на вход обновлённую запись
       runValidators: true, // данные будут валидированы перед изменением
-      upsert: false // если пользователь не найден, он будет создан
+      upsert: false, // если пользователь не найден, он будет создан
     },
   )
-    .then(user => res.send({ data: user }))
-    .catch(err => res.status(400).send({ message: 'Переданы некорректные данные обновления профиля' }));
+    .then((user) => res.send({ data: user }))
+    .catch((err) => res.status(400).send({ message: 'Переданы некорректные данные обновления профиля' }));
 };
 
 const updateUsersAvatar = (req, res) => {
@@ -56,8 +55,8 @@ const updateUsersAvatar = (req, res) => {
       upsert: false,
     },
   )
-    .then(avatar => res.send({ data: avatar }))
-    .catch(err => res.status(400).send({ message: 'Переданы некорректные данные обновления аватара' }));
+    .then((avatar) => res.send({ data: avatar }))
+    .catch((err) => res.status(400).send({ message: 'Переданы некорректные данные обновления аватара' }));
 };
 
 module.exports = {

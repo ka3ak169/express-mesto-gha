@@ -10,8 +10,8 @@ const postCards = (req, res) => {
   const { name, link } = req.body;
 
   Card.create({ name, link })
-    .then(card => res.send({ data: card }))
-    .catch(err => res.status(400).send({ message: 'Переданы некорректные данные карточки' }));
+    .then((card) => res.send({ data: card }))
+    .catch((err) => res.status(400).send({ message: 'Переданы некорректные данные карточки' }));
 };
 
 const deleteCards = (req, res) => {
@@ -19,13 +19,12 @@ const deleteCards = (req, res) => {
 
   Card.findByIdAndRemove(cardId)
     .then((card) => {
-      if(!card) {
-        return res.status(404).send({ message: 'Такой карточки не существует' })
-      } else {
-        res.send(card)
+      if (!card) {
+        return res.status(404).send({ message: 'Такой карточки не существует' });
       }
+      res.send(card);
     })
-    .catch((err) => res.status(500).send({ message: 'Произошла ошибка' }))
+    .catch((err) => res.status(500).send({ message: 'Произошла ошибка' }));
 };
 
 const addCardLike = (req, res) => {
@@ -38,8 +37,8 @@ const addCardLike = (req, res) => {
       new: true,
     },
   )
-    .then(card => res.send({ data: card }))
-    .catch(err => res.status(500).send({ message: 'Произошла ошибка' }));
+    .then((card) => res.send({ data: card }))
+    .catch((err) => res.status(500).send({ message: 'Произошла ошибка' }));
 };
 
 const deleteCardLike = (req, res) => {
@@ -52,8 +51,8 @@ const deleteCardLike = (req, res) => {
       new: true,
     },
   )
-    .then(card => res.send({ data: card }))
-    .catch(err => res.status(500).send({ message: 'Произошла ошибка' }));
+    .then((card) => res.send({ data: card }))
+    .catch((err) => res.status(500).send({ message: 'Произошла ошибка' }));
 };
 
 module.exports = {
