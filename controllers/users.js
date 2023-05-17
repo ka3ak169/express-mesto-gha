@@ -22,14 +22,14 @@ const getUserById = (req, res) => {
 const postUsers = (req, res) => {
   const { name, about, avatar } = req.body;
 
-  // if (!name || !about) {
-  //   res.status(400).send({ message: 'Переданы некорректные данные пользователя' });
-  //   return;
-  // }
+  if (!name || !about || !avatar) {
+    res.status(400).send({ message: 'Переданы некорректные данные пользователя' });
+    return;
+  }
 
   User.create({ name, about, avatar })
     .then((user) => res.status(200).send({ data: user }))
-    .catch(() => res.status(400).send({ message: 'Переданы некорректные данные пользователя' }));
+    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
 };
 
 const updateUsersProfile = (req, res) => {
