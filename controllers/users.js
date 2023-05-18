@@ -75,7 +75,7 @@ const updateUsersAvatar = (req, res) => {
       if (!user) {
         return res.status(404).send({ message: 'Пользователь не найден' });
       }
-      res.status(200).send({ data: user.avatar });
+      res.status(200).send({ avatar: user.avatar });
     })
     .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
 };

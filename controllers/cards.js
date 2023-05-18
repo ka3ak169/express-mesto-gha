@@ -10,7 +10,7 @@ const postCards = (req, res) => {
   const { name, link } = req.body;
 
   Card.create({ name, link })
-    .then((card) => res.send({ data: card }))
+    .then((card) => res.status(200).send({ data: card }))
     .catch(() => res.status(400).send({ message: 'Переданы некорректные данные карточки' }));
 };
 
