@@ -17,6 +17,10 @@ const postCards = (req, res) => {
 const deleteCards = (req, res) => {
   const { cardId } = req.params;
 
+  if (cardId === 'text') {
+    return res.status(400).send({ message: 'Некорректный формат ID карточки' });
+  }
+
   Card.findByIdAndRemove(cardId)
     .then((card) => {
       if (!card) {
@@ -30,6 +34,10 @@ const deleteCards = (req, res) => {
 const addCardLike = (req, res) => {
   const { cardId } = req.params;
 
+  if (cardId === 'text') {
+    return res.status(400).send({ message: 'Некорректный формат ID карточки' });
+  }
+
   Card.findByIdAndUpdate(
     cardId,
     { $addToSet: { likes: req.user._id } },
@@ -37,7 +45,7 @@ const addCardLike = (req, res) => {
   )
     .then((card) => {
       if (!card) {
-        return res.status(400).send({ message: 'Карточка с указанным id не найдена' });
+        return res.status(404).send({ message: 'Карточка с указанным id не найдена' });
       }
       res.status(200).send({ data: card });
     })
@@ -46,6 +54,7 @@ const addCardLike = (req, res) => {
 
 const deleteCardLike = (req, res) => {
   const { cardId } = req.params;
+  console.log(cardId);
 
   if (cardId === 'text') {
     return res.status(400).send({ message: 'Некорректный формат ID карточки' });
@@ -58,7 +67,7 @@ const deleteCardLike = (req, res) => {
   )
     .then((card) => {
       if (!card) {
-        return res.status(400).send({ message: 'Карточка с таким id не найдена' });
+        return res.status(404).send({ message: 'Карточка с таким id не найдена' });
       }
       res.status(200).send({ data: card });
     })

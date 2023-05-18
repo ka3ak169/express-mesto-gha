@@ -31,6 +31,8 @@ app.use(cardRouter);
 
 app.use((req, res, next) => {
   res.status(404).json({ message: 'Запрашиваемый ресурс не найден' });
+
+  next();
 });
 
 app.listen(PORT, () => {
