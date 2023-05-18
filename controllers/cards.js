@@ -37,15 +37,19 @@ const addCardLike = (req, res) => {
   )
     .then((card) => {
       if (!card) {
-        return res.status(404).send({ message: 'Карточка с указанным id не найдена' });
+        return res.status(400).send({ message: 'Карточка с указанным id не найдена' });
       }
-      res.send({ data: card });
+      res.status(200).send({ data: card });
     })
     .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
 };
 
 const deleteCardLike = (req, res) => {
   const { cardId } = req.params;
+
+  if (cardId === 'text') {
+    return res.status(400).send({ message: 'Некорректный формат ID карточки' });
+  }
 
   Card.findByIdAndUpdate(
     cardId,
@@ -54,9 +58,9 @@ const deleteCardLike = (req, res) => {
   )
     .then((card) => {
       if (!card) {
-        return res.status(404).send({ message: 'Карточка с таким id не найдена' });
+        return res.status(400).send({ message: 'Карточка с таким id не найдена' });
       }
-      res.send({ data: card });
+      res.status(200).send({ data: card });
     })
     .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
 };
