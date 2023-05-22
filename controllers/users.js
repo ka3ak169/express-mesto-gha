@@ -1,46 +1,43 @@
 const User = require('../models/user');
+const { BAD_REQUEST, NOT_FOUND, INTERNAL_SERVER_ERROR } = require('../utils/constants');
 
 const getUsers = (req, res) => {
   User.find({})
     .then((users) => res.send(users))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch(() => res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' }));
 };
 
 const getUserById = (req, res) => {
   const { userId } = req.params;
 
-  if (userId === 'text') {
-    return res.status(400).send({ message: 'Некорректный формат ID пользователя' });
-  }
-
   User.findById(userId)
     .then((user) => {
       if (!user) {
-        return res.status(404).send({ message: 'Пользователь с таким id не найден' });
+        return res.status(NOT_FOUND).send({ message: 'Пользователь с таким id не найден' });
       }
       res.send({ data: user });
     })
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(BAD_REQUEST).send({ message: 'Некорректный формат ID пользователя' });
+      } else {
+        res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' });
+      }
+    });
 };
 
 const postUsers = (req, res) => {
   const { name, about, avatar } = req.body;
 
-  if (!name || !about || !avatar) {
-    return res.status(400).send({ message: 'Переданы некорректные данные пользователя' });
-  }
-
-  if (name.length < 2 || name.length > 30) {
-    return res.status(400).send({ message: 'Поле "name" должно содержать от 2 до 30 символов' });
-  }
-
-  if (about.length < 2 || about.length > 30) {
-    return res.status(400).send({ message: 'Поле "about" должно содержать от 2 до 30 символов' });
-  }
-
   User.create({ name, about, avatar })
     .then((user) => res.status(200).send({ data: user }))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные пользователя' });
+      } else {
+        res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' });
+      }
+    });
 };
 
 const updateUsersProfile = (req, res) => {
@@ -56,7 +53,13 @@ const updateUsersProfile = (req, res) => {
     },
   )
     .then((user) => res.send({ data: user }))
-    .catch(() => res.status(400).send({ message: 'Переданы некорректные данные обновления профиля' }));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные обновления профиля' });
+      } else {
+        res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' });
+      }
+    });
 };
 
 const updateUsersAvatar = (req, res) => {
@@ -73,11 +76,17 @@ const updateUsersAvatar = (req, res) => {
   )
     .then((user) => {
       if (!user) {
-        return res.status(404).send({ message: 'Пользователь не найден' });
+        return res.status(NOT_FOUND).send({ message: 'Пользователь не найден' });
       }
       res.status(200).send({ avatar: user.avatar });
     })
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные обновления аватара' });
+      } else {
+        res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' });
+      }
+    });
 };
 
 module.exports = {

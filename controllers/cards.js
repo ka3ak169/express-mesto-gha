@@ -1,9 +1,10 @@
 const Card = require('../models/card');
+const { BAD_REQUEST, NOT_FOUND, INTERNAL_SERVER_ERROR } = require('../utils/constants');
 
 const getCards = (req, res) => {
   Card.find({})
     .then((cards) => res.send(cards))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch(() => res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' }));
 };
 
 const postCards = (req, res) => {
@@ -11,32 +12,36 @@ const postCards = (req, res) => {
 
   Card.create({ name, link })
     .then((card) => res.status(200).send({ data: card }))
-    .catch(() => res.status(400).send({ message: 'Переданы некорректные данные карточки' }));
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные карточки' });
+      } else {
+        res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' });
+      }
+    });
 };
 
 const deleteCards = (req, res) => {
   const { cardId } = req.params;
 
-  if (cardId === 'text') {
-    return res.status(400).send({ message: 'Некорректный формат ID карточки' });
-  }
-
   Card.findByIdAndRemove(cardId)
     .then((card) => {
       if (!card) {
-        return res.status(404).send({ message: 'Такой карточки не существует' });
+        return res.status(NOT_FOUND).send({ message: 'Такой карточки не существует' });
       }
       res.send(card);
     })
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(BAD_REQUEST).send({ message: 'Некорректный формат ID карточки' });
+      } else {
+        res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' });
+      }
+    });
 };
 
 const addCardLike = (req, res) => {
   const { cardId } = req.params;
-
-  if (cardId === 'text') {
-    return res.status(400).send({ message: 'Некорректный формат ID карточки' });
-  }
 
   Card.findByIdAndUpdate(
     cardId,
@@ -45,33 +50,41 @@ const addCardLike = (req, res) => {
   )
     .then((card) => {
       if (!card) {
-        return res.status(404).send({ message: 'Карточка с указанным id не найдена' });
+        return res.status(NOT_FOUND).send({ message: 'Карточка с указанным id не найдена' });
       }
       res.status(200).send({ data: card });
     })
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(BAD_REQUEST).send({ message: 'Некорректный формат ID карточки' });
+      } else {
+        res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' });
+      }
+    });
 };
 
 const deleteCardLike = (req, res) => {
   const { cardId } = req.params;
   console.log(cardId);
 
-  if (cardId === 'text') {
-    return res.status(400).send({ message: 'Некорректный формат ID карточки' });
-  }
-
   Card.findByIdAndUpdate(
     cardId,
     { $pull: { likes: req.user._id } }, // убрать _id из массива
-    { new: true }
+    { new: true },
   )
     .then((card) => {
       if (!card) {
-        return res.status(404).send({ message: 'Карточка с таким id не найдена' });
+        return res.status(NOT_FOUND).send({ message: 'Карточка с таким id не найдена' });
       }
       res.status(200).send({ data: card });
     })
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(BAD_REQUEST).send({ message: 'Некорректный формат ID карточки' });
+      } else {
+        res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' });
+      }
+    });
 };
 
 module.exports = {
