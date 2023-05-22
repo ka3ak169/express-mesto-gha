@@ -15,14 +15,13 @@ const getUserById = (req, res) => {
       if (!user) {
         return res.status(NOT_FOUND).send({ message: 'Пользователь с таким id не найден' });
       }
-      res.send({ data: user });
+      return res.send({ data: user });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(BAD_REQUEST).send({ message: 'Некорректный формат ID пользователя' });
-      } else {
-        res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' });
+        return res.status(BAD_REQUEST).send({ message: 'Некорректный формат ID пользователя' });
       }
+      return res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' });
     });
 };
 
@@ -78,14 +77,13 @@ const updateUsersAvatar = (req, res) => {
       if (!user) {
         return res.status(NOT_FOUND).send({ message: 'Пользователь не найден' });
       }
-      res.status(200).send({ avatar: user.avatar });
+      return res.status(200).send({ avatar: user.avatar });
     })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные обновления аватара' });
-      } else {
-        res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' });
+        return res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные обновления аватара' });
       }
+      return res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' });
     });
 };
 

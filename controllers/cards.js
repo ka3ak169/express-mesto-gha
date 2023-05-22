@@ -29,14 +29,13 @@ const deleteCards = (req, res) => {
       if (!card) {
         return res.status(NOT_FOUND).send({ message: 'Такой карточки не существует' });
       }
-      res.send(card);
+      return res.send(card);
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(BAD_REQUEST).send({ message: 'Некорректный формат ID карточки' });
-      } else {
-        res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' });
+        return res.status(BAD_REQUEST).send({ message: 'Некорректный формат ID карточки' });
       }
+      return res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' });
     });
 };
 
@@ -52,14 +51,13 @@ const addCardLike = (req, res) => {
       if (!card) {
         return res.status(NOT_FOUND).send({ message: 'Карточка с указанным id не найдена' });
       }
-      res.status(200).send({ data: card });
+      return res.status(200).send({ data: card });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(BAD_REQUEST).send({ message: 'Некорректный формат ID карточки' });
-      } else {
-        res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' });
+        return res.status(BAD_REQUEST).send({ message: 'Некорректный формат ID карточки' });
       }
+      return res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' });
     });
 };
 
@@ -76,14 +74,13 @@ const deleteCardLike = (req, res) => {
       if (!card) {
         return res.status(NOT_FOUND).send({ message: 'Карточка с таким id не найдена' });
       }
-      res.status(200).send({ data: card });
+      return res.status(200).send({ data: card });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(BAD_REQUEST).send({ message: 'Некорректный формат ID карточки' });
-      } else {
-        res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' });
+        return res.status(BAD_REQUEST).send({ message: 'Некорректный формат ID карточки' });
       }
+      return res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' });
     });
 };
 
