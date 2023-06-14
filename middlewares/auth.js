@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const { UNAUTHORIZED } = require('../utils/constants');
 
 const authPayload = (req, res, next) => {
   // Получение токена из заголовков запроса
@@ -6,7 +7,7 @@ const authPayload = (req, res, next) => {
 
   // Проверка наличия токена
   if (!token) {
-    return res.status(401).send({ message: 'Требуется токен авторизации' });
+    return res.status(UNAUTHORIZED).send({ message: 'Требуется токен авторизации' });
   }
 
   try {
@@ -16,11 +17,9 @@ const authPayload = (req, res, next) => {
     // Добавление пейлоада токена в объект запроса
     req.user = payload;
 
-    // Вызов следующего обработчика
-    next();
+    return next();
   } catch (error) {
-    // Обработка ошибки верификации токена
-    return res.status(401).send({ message: 'Неверный токен авторизации' });
+    return res.status(UNAUTHORIZED).send({ message: 'Неверный токен авторизации' });
   }
 };
 

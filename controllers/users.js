@@ -17,14 +17,14 @@ const login = (req, res) => {
     return res.status(UNAUTHORIZED).send({ message: 'Неправильные почта или пароль' });
   }
 
-  User.findOne({ email }).select('+password')
+  return User.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) {
         return res.status(UNAUTHORIZED).send({ message: 'Неправильные почта или пароль' });
       }
 
       // Проверка совпадения пароля
-      bcrypt.compare(password, user.password)
+      return bcrypt.compare(password, user.password)
         .then((isMatch) => {
           if (!isMatch) {
             return res.status(UNAUTHORIZED).send({ message: 'Неправильные почта или пароль' });
@@ -38,7 +38,7 @@ const login = (req, res) => {
           const token = getGwtToken(id);
 
           // Отправка токена и ID пользователя клиенту
-          res.cookie('jwt', token, {
+          return res.cookie('jwt', token, {
             httpOnly: true,
             secure: true,
             sameSite: 'none',
@@ -82,7 +82,7 @@ const getUserInformation = (req, res) => {
         return res.status(404).send({ message: 'Пользователь не найден' });
       }
 
-      res.send({ data: user }); // Отправляем ответ
+      return res.send({ data: user }); // Отправляем ответ
     })
     .catch((err) => res.status(500).send({ message: 'Произошла ошибка', error: err }));
 };
@@ -97,17 +97,17 @@ const createUser = (req, res) => {
     return res.status(BAD_REQUEST).send({ message: 'Некорректный формат email' });
   }
 
-  bcrypt.hash(password, SALT_ROUNRDS, (err, hash) => {
+  return bcrypt.hash(password, SALT_ROUNRDS, (err, hash) => {
     if (err) {
       return res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' });
     }
 
-    User.create({
+    return User.create({
       name, about, avatar, email, password: hash,
     })
       .then((user) => res.status(200).send({ data: user }))
-      .catch((err) => {
-        if (err.name === 'ValidationError') {
+      .catch((error) => {
+        if (error.name === 'ValidationError') {
           res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные пользователя' });
         } else {
           res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' });

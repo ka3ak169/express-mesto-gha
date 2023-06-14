@@ -15,18 +15,18 @@ module.exports = async (req, res, next) => {
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
     const userId = decodedToken.id;
 
-    User.findById(userId)
+    return User.findById(userId)
       .then((user) => {
         if (!user) {
-          return res.status(401).send({ message: 'Пользователь не найден' });
+          return res.status(UNAUTHORIZED).send({ message: 'Пользователь не найден' });
         }
         // console.log(user);
         req.user = user;
 
-        next();
+        return next();
       })
       .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
   } catch (error) {
-    return res.status(401).send({ message: 'Недействительный авторизационный токен' });
+    return res.status(UNAUTHORIZED).send({ message: 'Недействительный авторизационный токен' });
   }
 };
