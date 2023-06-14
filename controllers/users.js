@@ -97,6 +97,11 @@ const createUser = (req, res) => {
     return res.status(BAD_REQUEST).send({ message: 'Некорректный формат email' });
   }
 
+  // Валидация avatar
+  if (!validator.isURL(avatar)) {
+    return res.status(BAD_REQUEST).send({ message: 'Некорректный формат ссылки на аватар' });
+  }
+
   return bcrypt.hash(password, SALT_ROUNRDS, (err, hash) => {
     if (err) {
       return res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' });
