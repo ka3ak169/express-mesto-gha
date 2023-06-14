@@ -1,32 +1,28 @@
 const jwt = require('jsonwebtoken');
 const { UNAUTHORIZED } = require('../utils/constants');
-const { isAuthorized } = require('../utils/jwt');
-const User = require('../models/user');
 require('dotenv').config();
 
 module.exports = async (req, res, next) => {
-  const tokenWithBearer = req.headers.authorization;
-  const token = tokenWithBearer.split(' ')[1];
+  const { authorization } = req.headers;
 
-  const isAuth = await isAuthorized(token);
-  if (!isAuth) return res.status(UNAUTHORIZED).send({ message: 'Необходима авторизация' });
+  if (!authorization || !authorization.startsWith('Bearer ')) {
+    return res
+      .status(UNAUTHORIZED)
+      .send({ message: 'Необходима авторизация' });
+  }
+
+  // извлечём токен
+  const token = authorization.replace('Bearer ', '');
+
+  let payload;
 
   try {
-    const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-    const userId = decodedToken.id;
-
-    return User.findById(userId)
-      .then((user) => {
-        if (!user) {
-          return res.status(UNAUTHORIZED).send({ message: 'Пользователь не найден' });
-        }
-        // console.log(user);
-        req.user = user;
-
-        return next();
-      })
-      .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    payload = jwt.verify(token, process.env.JWT_SECRET);
   } catch (error) {
     return res.status(UNAUTHORIZED).send({ message: 'Недействительный авторизационный токен' });
   }
+
+  req.user = payload; // записываем пейлоуд в объект запроса
+
+  return next();
 };

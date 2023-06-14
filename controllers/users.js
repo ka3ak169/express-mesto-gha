@@ -44,9 +44,9 @@ const login = (req, res) => {
             sameSite: 'none',
           }).send({ message: 'Успешная авторизация', user: req.user, token });
         })
-        .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+        .catch(() => res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' }));
     })
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch(() => res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' }));
 };
 
 const getUsers = (req, res) => {
@@ -74,17 +74,17 @@ const getUserById = (req, res) => {
 };
 
 const getUserInformation = (req, res) => {
-  const userId = req.user._id;
+  const userId = req.user.id;
 
   User.findById(userId)
     .then((user) => {
       if (!user) {
-        return res.status(404).send({ message: 'Пользователь не найден' });
+        return res.status(NOT_FOUND).send({ message: 'Пользователь не найден' });
       }
 
       return res.send({ data: user }); // Отправляем ответ
     })
-    .catch((err) => res.status(500).send({ message: 'Произошла ошибка', error: err }));
+    .catch((err) => res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка', error: err }));
 };
 
 const createUser = (req, res) => {

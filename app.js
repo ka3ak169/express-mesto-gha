@@ -21,14 +21,6 @@ app.use(cookieParser());
 // Обработка URL-кодированных данных
 app.use(express.urlencoded({ extended: true }));
 
-// app.use((req, res, next) => {
-//   req.user = {
-//     _id: '645c33230c414a5e03df7f5e',
-//   };
-
-//   next();
-// });
-
 app.post('/signin', login);
 app.post('/signup', createUser);
 
@@ -48,6 +40,5 @@ app.use((req, res, next) => {
 });
 
 app.listen(PORT, () => {
-  // console.log(`App listening on port ${PORT}`);
-  console.log('started!!!');
+  console.log(`App listening on port ${PORT}`);
 });
