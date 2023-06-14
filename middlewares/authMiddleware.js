@@ -1,7 +1,7 @@
+const jwt = require('jsonwebtoken');
 const { UNAUTHORIZED } = require('../utils/constants');
 const { isAuthorized } = require('../utils/jwt');
 const User = require('../models/user');
-const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
 module.exports = async (req, res, next) => {
@@ -13,7 +13,6 @@ module.exports = async (req, res, next) => {
 
   try {
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-    // console.log(decodedToken);
     const userId = decodedToken.id;
 
     User.findById(userId)
@@ -21,7 +20,7 @@ module.exports = async (req, res, next) => {
         if (!user) {
           return res.status(401).send({ message: 'Пользователь не найден' });
         }
-        console.log(user);
+        // console.log(user);
         req.user = user;
 
         next();

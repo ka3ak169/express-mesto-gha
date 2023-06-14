@@ -1,5 +1,7 @@
 const Card = require('../models/card');
-const { BAD_REQUEST, NOT_FOUND, FORBIDDEN, INTERNAL_SERVER_ERROR } = require('../utils/constants');
+const {
+  BAD_REQUEST, NOT_FOUND, FORBIDDEN, INTERNAL_SERVER_ERROR,
+} = require('../utils/constants');
 
 const getCards = (req, res) => {
   Card.find({})
@@ -23,9 +25,7 @@ const postCards = (req, res) => {
 
 const deleteCards = (req, res) => {
   const { cardId } = req.params;
-  console.log(req.params);
   const userId = req.user._id;
-
 
   Card.findById(cardId)
     .then((card) => {
@@ -34,12 +34,12 @@ const deleteCards = (req, res) => {
       }
 
       // Проверка, является ли текущий пользователь владельцем карточки
-      if (card.owner.toString() !== userId) {
+      if (card.owner && card.owner.toString() !== userId) {
         return res.status(FORBIDDEN).send({ message: 'Доступ запрещен' });
       }
 
       // Удаление карточки
-      Card.findByIdAndRemove(cardId)
+      return Card.findByIdAndRemove(cardId)
         .then((deletedCard) => res.send(deletedCard))
         .catch(() => res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' }));
     })

@@ -1,9 +1,11 @@
-const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const User = require('../models/user');
-const { UNAUTHORIZED, BAD_REQUEST, NOT_FOUND, INTERNAL_SERVER_ERROR } = require('../utils/constants');
-const { getGwtToken } = require('../utils/jwt');
 const validator = require('validator');
+const User = require('../models/user');
+const {
+  UNAUTHORIZED, BAD_REQUEST, NOT_FOUND, INTERNAL_SERVER_ERROR,
+} = require('../utils/constants');
+const { getGwtToken } = require('../utils/jwt');
+
 const SALT_ROUNRDS = 10;
 require('dotenv').config();
 
@@ -12,31 +14,28 @@ const login = (req, res) => {
 
   // Проверка наличия email и пароля в запросе
   if (!email || !password) {
-    return res.status(401).send({ message: 'Неправильные почта или пароль' });
+    return res.status(UNAUTHORIZED).send({ message: 'Неправильные почта или пароль' });
   }
 
   User.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) {
-        return res.status(401).send({ message: 'Неправильные почта или пароль' });
+        return res.status(UNAUTHORIZED).send({ message: 'Неправильные почта или пароль' });
       }
 
       // Проверка совпадения пароля
       bcrypt.compare(password, user.password)
         .then((isMatch) => {
           if (!isMatch) {
-            return res.status(401).send({ message: 'Неправильные почта или пароль' });
+            return res.status(UNAUTHORIZED).send({ message: 'Неправильные почта или пароль' });
           }
 
           // // Добавление данных пользователя в req
           req.user = user;
-          // console.log(user);
-          // console.log(req.user);
 
           const id = user._id.toString();
           // Создание JWT токена
           const token = getGwtToken(id);
-          // console.log(req.user);
 
           // Отправка токена и ID пользователя клиенту
           res.cookie('jwt', token, {
@@ -51,14 +50,12 @@ const login = (req, res) => {
 };
 
 const getUsers = (req, res) => {
-  // console.log(req.user);
   User.find({})
     .then((users) => res.send(users))
     .catch(() => res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' }));
 };
 
 const getUserById = (req, res) => {
-  // console.log(req.params);
   const { userId } = req.params;
 
   User.findById(userId)
@@ -78,7 +75,6 @@ const getUserById = (req, res) => {
 
 const getUserInformation = (req, res) => {
   const userId = req.user._id;
-  // console.log(userId);
 
   User.findById(userId)
     .then((user) => {
@@ -86,14 +82,15 @@ const getUserInformation = (req, res) => {
         return res.status(404).send({ message: 'Пользователь не найден' });
       }
 
-      res.send({ data: user }); // Отправляем ответ только здесь
+      res.send({ data: user }); // Отправляем ответ
     })
     .catch((err) => res.status(500).send({ message: 'Произошла ошибка', error: err }));
 };
 
-
 const createUser = (req, res) => {
-  const { name, about, avatar, email, password } = req.body;
+  const {
+    name, about, avatar, email, password,
+  } = req.body;
 
   // Валидация email
   if (!validator.isEmail(email)) {
@@ -105,7 +102,9 @@ const createUser = (req, res) => {
       return res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' });
     }
 
-    User.create({ name, about, avatar, email, password: hash })
+    User.create({
+      name, about, avatar, email, password: hash,
+    })
       .then((user) => res.status(200).send({ data: user }))
       .catch((err) => {
         if (err.name === 'ValidationError') {
