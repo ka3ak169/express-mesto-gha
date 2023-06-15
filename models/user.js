@@ -1,24 +1,25 @@
 const mongoose = require('mongoose');
-const validator = require('validator');
+// eslint-disable-next-line import/no-extraneous-dependencies
+const Joi = require('joi');
 
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
     default: 'Жак-Ив Кусто',
-    minlength: [2, 'Минимальная длина имени - 2 символа'],
-    maxlength: [30, 'Максимальная длина имени - 30 символов'],
+    minlength: 2,
+    maxlength: 30,
   },
   about: {
     type: String,
     default: 'Исследователь',
-    minlength: [2, 'Минимальная длина информации о пользователе - 2 символа'],
-    maxlength: [30, 'Максимальная длина информации о пользователе - 30 символов'],
+    minlength: 2,
+    maxlength: 30,
   },
   avatar: {
     type: String,
     default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
     validate: {
-      validator: (value) => validator.isURL(value),
+      validator: (value) => Joi.string().uri().validate(value).error === undefined,
       message: 'Некорректный формат ссылки на аватар',
     },
   },
@@ -27,20 +28,15 @@ const userSchema = new mongoose.Schema({
     required: [true, 'Email обязателен для заполнения'],
     unique: true,
     validate: {
-      validator: (value) => validator.isEmail(value),
+      validator: (value) => Joi.string().email().validate(value).error === undefined,
       message: 'Некорректный формат email',
     },
   },
-  // password: {
-  //   type: String,
-  //   required: [true, 'Пароль обязателен для заполнения'],
-  //   minlength: [6, 'Минимальная длина пароля - 6 символов'],
-  //   select: false,
-  // },
   password: {
     type: String,
-    required: true,
-    select: false, // исключить поле "password" при возвращении данных
+    required: [true, 'Пароль обязателен для заполнения'],
+    minlength: 6,
+    select: false,
   },
 });
 
