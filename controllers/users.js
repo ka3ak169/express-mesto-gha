@@ -97,32 +97,41 @@ const createUser = (req, res) => {
     return res.status(BAD_REQUEST).send({ message: 'Email и пароль должны быть указаны' });
   }
 
-  const userData = {
-    name,
-    about,
-    avatar,
-    email,
-    password,
-  };
+  // Валидация пароля
+  if (password.length < 6) {
+    return res.status(BAD_REQUEST).send({ message: 'Минимальная длина пароля - 6 символов' });
+  }
 
-  return bcrypt.hash(password, SALT_ROUNRDS, (err, hash) => {
-    if (err) {
-      return res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' });
-    }
+  // Поиск пользователя по email
+  User.findOne({ email })
+    .then((user) => {
+      if (user) {
+        return res.status(BAD_REQUEST).send({ message: 'Пользователь с таким email уже существует' });
+      }
 
-    userData.password = hash;
-
-    return User.create(userData)
-      .then((user) => res.status(200).send({ data: user }))
-      .catch((error) => {
-        if (error.name === 'ValidationError') {
-          // eslint-disable-next-line no-shadow
-          const validationErrors = Object.values(error.errors).map((err) => err.message);
-          return res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные пользователя', validationErrors });
+      // Хэширование пароля
+      return bcrypt.hash(password, SALT_ROUNRDS, (err, hash) => {
+        if (err) {
+          return res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' });
         }
-        return res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' });
+
+        // Создание пользователя
+        return User.create({
+          name, about, avatar, email, password: hash,
+        })
+          .then((newUser) => res.status(200).send({ data: newUser }))
+          .catch((error) => {
+            if (error.name === 'ValidationError') {
+              res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные пользователя' });
+            } else {
+              res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' });
+            }
+          });
       });
-  });
+    })
+    .catch((error) => {
+      res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' });
+    });
 };
 
 const updateUsersProfile = (req, res) => {
