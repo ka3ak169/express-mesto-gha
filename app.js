@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
 require('dotenv').config();
 const userRouter = require('./routers/users');
 const cardRouter = require('./routers/cards');
@@ -17,6 +18,7 @@ const app = express();
 app.use(express.json());
 
 app.use(cookieParser());
+app.use(bodyParser.json());
 
 // Обработка URL-кодированных данных
 app.use(express.urlencoded({ extended: true }));

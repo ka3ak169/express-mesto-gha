@@ -92,6 +92,11 @@ const createUser = (req, res) => {
     name, about, avatar, email, password,
   } = req.body;
 
+  // Проверка наличия и валидация email и password
+  if (!email || !password) {
+    return res.status(BAD_REQUEST).send({ message: 'Email и пароль должны быть указаны' });
+  }
+
   // Валидация name
   if (name.length < 2 || name.length > 30) {
     return res.status(BAD_REQUEST).send({ message: 'Некорректная длина имени' });
@@ -108,6 +113,10 @@ const createUser = (req, res) => {
   }
 
   // Валидация email
+  if (!email) {
+    return res.status(BAD_REQUEST).send({ message: 'Email обязателен для заполнения' });
+  }
+
   if (!validator.isEmail(email)) {
     return res.status(BAD_REQUEST).send({ message: 'Некорректный формат email' });
   }
