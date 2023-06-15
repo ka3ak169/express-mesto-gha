@@ -31,15 +31,16 @@ const userSchema = new mongoose.Schema({
       message: 'Некорректный формат email',
     },
   },
+  // password: {
+  //   type: String,
+  //   required: [true, 'Пароль обязателен для заполнения'],
+  //   minlength: [6, 'Минимальная длина пароля - 6 символов'],
+  //   select: false,
+  // },
   password: {
     type: String,
-    required: [true, 'Пароль обязателен для заполнения'],
-    minlength: [6, 'Минимальная длина пароля - 6 символов'],
-    validate: {
-      validator: (value) => value.trim().length >= 6,
-      message: 'Минимальная длина пароля - 6 символов',
-    },
-    select: false,
+    required: true,
+    select: false, // исключить поле "password" при возвращении данных
   },
 });
 

@@ -103,7 +103,7 @@ const createUser = (req, res) => {
   }
 
   // Поиск пользователя по email
-  User.findOne({ email })
+  return User.findOne({ email })
     .then((user) => {
       if (user) {
         return res.status(BAD_REQUEST).send({ message: 'Пользователь с таким email уже существует' });
@@ -119,7 +119,11 @@ const createUser = (req, res) => {
         return User.create({
           name, about, avatar, email, password: hash,
         })
-          .then((newUser) => res.status(200).send({ data: newUser }))
+          .then((newUser) => {
+            // eslint-disable-next-line no-shadow
+            const { password, ...userData } = newUser.toObject();
+            return res.status(200).send({ data: userData });
+          })
           .catch((error) => {
             if (error.name === 'ValidationError') {
               res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные пользователя' });
@@ -129,7 +133,7 @@ const createUser = (req, res) => {
           });
       });
     })
-    .catch((error) => {
+    .catch(() => {
       res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' });
     });
 };
