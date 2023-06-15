@@ -1,5 +1,5 @@
 const bcrypt = require('bcrypt');
-const validator = require('validator');
+// const validator = require('validator');
 const User = require('../models/user');
 const {
   UNAUTHORIZED, BAD_REQUEST, NOT_FOUND, INTERNAL_SERVER_ERROR,
@@ -97,45 +97,30 @@ const createUser = (req, res) => {
     return res.status(BAD_REQUEST).send({ message: 'Email и пароль должны быть указаны' });
   }
 
-  // Валидация name
-  if (name.length < 2 || name.length > 30) {
-    return res.status(BAD_REQUEST).send({ message: 'Некорректная длина имени' });
-  }
-
-  // Валидация about
-  if (about.length < 2 || about.length > 30) {
-    return res.status(BAD_REQUEST).send({ message: 'Некорректная длина информации о пользователе' });
-  }
-
-  // Валидация avatar
-  if (!validator.isURL(avatar)) {
-    return res.status(BAD_REQUEST).send({ message: 'Некорректный формат ссылки на аватар' });
-  }
-
-  // Валидация email
-  if (!email) {
-    return res.status(BAD_REQUEST).send({ message: 'Email обязателен для заполнения' });
-  }
-
-  if (!validator.isEmail(email)) {
-    return res.status(BAD_REQUEST).send({ message: 'Некорректный формат email' });
-  }
+  const userData = {
+    name,
+    about,
+    avatar,
+    email,
+    password,
+  };
 
   return bcrypt.hash(password, SALT_ROUNRDS, (err, hash) => {
     if (err) {
       return res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' });
     }
 
-    return User.create({
-      name, about, avatar, email, password: hash,
-    })
+    userData.password = hash;
+
+    return User.create(userData)
       .then((user) => res.status(200).send({ data: user }))
       .catch((error) => {
         if (error.name === 'ValidationError') {
-          res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные пользователя' });
-        } else {
-          res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' });
+          // eslint-disable-next-line no-shadow
+          const validationErrors = Object.values(error.errors).map((err) => err.message);
+          return res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные пользователя', validationErrors });
         }
+        return res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' });
       });
   });
 };
