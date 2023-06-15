@@ -92,14 +92,24 @@ const createUser = (req, res) => {
     name, about, avatar, email, password,
   } = req.body;
 
-  // Валидация email
-  if (!validator.isEmail(email)) {
-    return res.status(BAD_REQUEST).send({ message: 'Некорректный формат email' });
+  // Валидация name
+  if (name.length < 2 || name.length > 30) {
+    return res.status(BAD_REQUEST).send({ message: 'Некорректная длина имени' });
+  }
+
+  // Валидация about
+  if (about.length < 2 || about.length > 30) {
+    return res.status(BAD_REQUEST).send({ message: 'Некорректная длина информации о пользователе' });
   }
 
   // Валидация avatar
   if (!validator.isURL(avatar)) {
     return res.status(BAD_REQUEST).send({ message: 'Некорректный формат ссылки на аватар' });
+  }
+
+  // Валидация email
+  if (!validator.isEmail(email)) {
+    return res.status(BAD_REQUEST).send({ message: 'Некорректный формат email' });
   }
 
   return bcrypt.hash(password, SALT_ROUNRDS, (err, hash) => {
