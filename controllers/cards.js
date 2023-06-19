@@ -1,15 +1,15 @@
 const Card = require('../models/card');
 const {
-  BAD_REQUEST, NOT_FOUND, FORBIDDEN, INTERNAL_SERVER_ERROR,
+  BAD_REQUEST, NOT_FOUND, FORBIDDEN,
 } = require('../utils/constants');
 
-const getCards = (req, res) => {
+const getCards = (req, res, next) => {
   Card.find({})
     .then((cards) => res.send(cards))
-    .catch(() => res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' }));
+    .catch(next);
 };
 
-const postCards = (req, res) => {
+const postCards = (req, res, next) => {
   const { name, link } = req.body;
 
   Card.create({ name, link })
@@ -18,12 +18,12 @@ const postCards = (req, res) => {
       if (err.name === 'ValidationError') {
         res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные карточки' });
       } else {
-        res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' });
+        next(err);
       }
     });
 };
 
-const deleteCards = (req, res) => {
+const deleteCards = (req, res, next) => {
   const { cardId } = req.params;
   const userId = req.user._id;
 
@@ -41,17 +41,18 @@ const deleteCards = (req, res) => {
       // Удаление карточки
       return Card.findByIdAndRemove(cardId)
         .then((deletedCard) => res.send(deletedCard))
-        .catch(() => res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' }));
+        .catch(next);
     })
+    // eslint-disable-next-line consistent-return
     .catch((err) => {
       if (err.name === 'CastError') {
         return res.status(BAD_REQUEST).send({ message: 'Некорректный формат ID карточки' });
       }
-      return res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' });
+      next(err);
     });
 };
 
-const addCardLike = (req, res) => {
+const addCardLike = (req, res, next) => {
   const { cardId } = req.params;
 
   Card.findByIdAndUpdate(
@@ -65,15 +66,16 @@ const addCardLike = (req, res) => {
       }
       return res.status(200).send({ data: card });
     })
+    // eslint-disable-next-line consistent-return
     .catch((err) => {
       if (err.name === 'CastError') {
         return res.status(BAD_REQUEST).send({ message: 'Некорректный формат ID карточки' });
       }
-      return res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' });
+      next(err);
     });
 };
 
-const deleteCardLike = (req, res) => {
+const deleteCardLike = (req, res, next) => {
   const { cardId } = req.params;
 
   Card.findByIdAndUpdate(
@@ -87,11 +89,12 @@ const deleteCardLike = (req, res) => {
       }
       return res.status(200).send({ data: card });
     })
+    // eslint-disable-next-line consistent-return
     .catch((err) => {
       if (err.name === 'CastError') {
         return res.status(BAD_REQUEST).send({ message: 'Некорректный формат ID карточки' });
       }
-      return res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' });
+      next(err);
     });
 };
 
