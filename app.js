@@ -6,7 +6,7 @@ const { celebrate, Joi } = require('celebrate');
 require('dotenv').config();
 const userRouter = require('./routers/users');
 const cardRouter = require('./routers/cards');
-const errorHandler = require('./middlewares/errorHandler');
+// const errorHandler = require('./middlewares/errorHandler');
 
 const {
   login,
@@ -49,7 +49,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(errorHandler);
+// app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);

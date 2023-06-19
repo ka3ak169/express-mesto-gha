@@ -85,51 +85,47 @@ const getUserInformation = (req, res, next) => {
     .catch((err) => next({ status: INTERNAL_SERVER_ERROR, message: 'Произошла ошибка', error: err }));
 };
 
-const createUser = (req, res, next) => {
-  const {
-    name, about, avatar, email, password,
-  } = req.body;
+const createUser = async (req, res, next) => {
+  try {
+    const { name, about, avatar, email, password } = req.body;
 
-  // Проверка наличия и валидация email и password
-  if (!email || !password) {
-    return next({ status: BAD_REQUEST, message: 'Email и пароль должны быть указаны' });
+    // Проверка наличия и валидация email и password
+    if (!email || !password) {
+      throw { status: BAD_REQUEST, message: 'Email и пароль должны быть указаны' };
+    }
+
+    // Валидация пароля
+    if (password.length < 6) {
+      throw { status: BAD_REQUEST, message: 'Минимальная длина пароля - 6 символов' };
+    }
+
+    // Поиск пользователя по email
+    const existingUser = await User.findOne({ email }).exec();
+    if (existingUser) {
+      throw { status: BAD_REQUEST, message: 'Пользователь с таким email уже существует' };
+    }
+
+    // Хэширование пароля
+    const hash = await bcrypt.hash(password, SALT_ROUNDS);
+
+    // Создание пользователя
+    const newUser = await User.create({
+      name,
+      about,
+      avatar,
+      email,
+      password: hash,
+    });
+
+    const userData = { ...newUser._doc, password: undefined };
+    return res.status(200).send({ data: userData });
+  } catch (error) {
+    if (error.name === 'ValidationError') {
+      next({ status: BAD_REQUEST, message: 'Переданы некорректные данные пользователя' });
+    } else {
+      next({ status: INTERNAL_SERVER_ERROR, message: 'Произошла ошибка' });
+    }
   }
-
-  // Валидация пароля
-  if (password.length < 6) {
-    return next({ status: BAD_REQUEST, message: 'Минимальная длина пароля - 6 символов' });
-  }
-
-  // Поиск пользователя по email
-  return User.findOne({ email })
-    .then((user) => {
-      if (user) {
-        return next({ status: BAD_REQUEST, message: 'Пользователь с таким email уже существует' });
-      }
-
-      // Хэширование пароля
-      return bcrypt.hash(password, SALT_ROUNDS)
-        .then((hash) =>
-          // Создание пользователя
-          // eslint-disable-next-line implicit-arrow-linebreak
-          User.create({
-            name, about, avatar, email, password: hash,
-          })
-            .then((newUser) => {
-              // eslint-disable-next-line no-shadow
-              const { password, ...userData } = newUser.toObject();
-              return res.status(200).send({ data: userData });
-            })
-            .catch((error) => {
-              if (error.name === 'ValidationError') {
-                next({ status: BAD_REQUEST, message: 'Переданы некорректные данные пользователя' });
-              } else {
-                next({ status: INTERNAL_SERVER_ERROR, message: 'Произошла ошибка' });
-              }
-            }))
-        .catch(() => next({ status: INTERNAL_SERVER_ERROR, message: 'Произошла ошибка' }));
-    })
-    .catch(() => next({ status: INTERNAL_SERVER_ERROR, message: 'Произошла ошибка' }));
 };
 
 const updateUsersProfile = (req, res, next) => {
