@@ -1,7 +1,5 @@
 const Card = require('../models/card');
-const {
-  BAD_REQUEST, NOT_FOUND, FORBIDDEN,
-} = require('../utils/constants');
+const { BAD_REQUEST, NOT_FOUND, INTERNAL_SERVER_ERROR } = require('../utils/constants');
 
 const getCards = (req, res, next) => {
   Card.find({})
@@ -25,23 +23,13 @@ const postCards = (req, res, next) => {
 
 const deleteCards = (req, res, next) => {
   const { cardId } = req.params;
-  const userId = req.user._id;
 
-  Card.findById(cardId)
+  Card.findByIdAndRemove(cardId)
     .then((card) => {
       if (!card) {
         return res.status(NOT_FOUND).send({ message: 'Такой карточки не существует' });
       }
-
-      // Проверка, является ли текущий пользователь владельцем карточки
-      if (card.owner && card.owner.toString() !== userId) {
-        return res.status(FORBIDDEN).send({ message: 'Доступ запрещен' });
-      }
-
-      // Удаление карточки
-      return Card.findByIdAndRemove(cardId)
-        .then((deletedCard) => res.send(deletedCard))
-        .catch(next);
+      return res.send(card);
     })
     // eslint-disable-next-line consistent-return
     .catch((err) => {

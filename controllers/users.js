@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 const bcrypt = require('bcrypt');
 const User = require('../models/user');
 const {
@@ -48,12 +49,22 @@ const login = (req, res, next) => {
 };
 
 const getUsers = (req, res, next) => {
+=======
+const User = require('../models/user');
+const { BAD_REQUEST, NOT_FOUND, INTERNAL_SERVER_ERROR } = require('../utils/constants');
+
+const getUsers = (req, res) => {
+>>>>>>> parent of 7d7eeeb (14 спринт 1  итерация)
   User.find({})
     .then((users) => res.send(users))
     .catch(() => next({ status: INTERNAL_SERVER_ERROR, message: 'Произошла ошибка' }));
 };
 
+<<<<<<< HEAD
 const getUserById = (req, res, next) => {
+=======
+const getUserById = (req, res) => {
+>>>>>>> parent of 7d7eeeb (14 спринт 1  итерация)
   const { userId } = req.params;
 
   User.findById(userId)
@@ -71,6 +82,7 @@ const getUserById = (req, res, next) => {
     });
 };
 
+<<<<<<< HEAD
 const getUserInformation = (req, res, next) => {
   const userId = req.user.id;
 
@@ -126,6 +138,20 @@ const createUser = async (req, res, next) => {
       next({ status: INTERNAL_SERVER_ERROR, message: 'Произошла ошибка' });
     }
   }
+=======
+const postUsers = (req, res) => {
+  const { name, about, avatar } = req.body;
+
+  User.create({ name, about, avatar })
+    .then((user) => res.status(200).send({ data: user }))
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные пользователя' });
+      } else {
+        res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' });
+      }
+    });
+>>>>>>> parent of 7d7eeeb (14 спринт 1  итерация)
 };
 
 const updateUsersProfile = (req, res, next) => {
@@ -177,11 +203,9 @@ const updateUsersAvatar = (req, res, next) => {
 };
 
 module.exports = {
-  login,
   getUsers,
   getUserById,
-  getUserInformation,
-  createUser,
+  postUsers,
   updateUsersProfile,
   updateUsersAvatar,
 };

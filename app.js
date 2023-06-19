@@ -1,17 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const cookieParser = require('cookie-parser');
-const bodyParser = require('body-parser');
-const { celebrate, Joi } = require('celebrate');
-require('dotenv').config();
 const userRouter = require('./routers/users');
 const cardRouter = require('./routers/cards');
-// const errorHandler = require('./middlewares/errorHandler');
-
-const {
-  login,
-  createUser,
-} = require('./controllers/users');
 
 const { PORT = 3000 } = process.env;
 
@@ -19,20 +9,16 @@ const app = express();
 // Обработка JSON-данных
 app.use(express.json());
 
-app.use(cookieParser());
-app.use(bodyParser.json());
-
 // Обработка URL-кодированных данных
 app.use(express.urlencoded({ extended: true }));
 
-app.post('/signin', login);
-app.post('/signup', celebrate({
-  body: Joi.object().keys({
-    email: Joi.string().required().email(),
-    password: Joi.string().required().min(6),
-    name: Joi.string().required().min(2).max(30),
-  }),
-}), createUser);
+app.use((req, res, next) => {
+  req.user = {
+    _id: '645c33230c414a5e03df7f5e',
+  };
+
+  next();
+});
 
 // Подключение к серверу MongoDB
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb', {
