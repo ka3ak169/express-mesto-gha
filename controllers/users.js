@@ -112,6 +112,8 @@ const createUser = (req, res) => {
         if (error.name === 'ValidationError') {
           return res.status(400).send({ message: 'Переданы некорректные данные пользователя' });
         }
+      console.log(error);
+
         return res.status(500).send({ message: 'Произошла ошибка' });
       });
   });

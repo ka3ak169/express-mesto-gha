@@ -1,11 +1,13 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
-const { celebrate, Joi } = require('celebrate');
+const { celebrate, Joi, errors } = require('celebrate');
 const errorMiddleware = require('./middlewares/errorMiddleware');
 require('dotenv').config();
 const userRouter = require('./routers/users');
 const cardRouter = require('./routers/cards');
+
+// const { errors } = require('celebrate');
 
 const {
   login,
@@ -19,6 +21,9 @@ const app = express();
 app.use(express.json());
 
 app.use(cookieParser());
+
+// обработчики ошибок
+app.use(errors()); // обработчик ошибок celebrate
 
 // Обработка URL-кодированных данных
 app.use(express.urlencoded({ extended: true }));

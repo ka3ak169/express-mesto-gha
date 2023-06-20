@@ -18,6 +18,7 @@ const errorHandler = (err, req, res, next) => {
     const { status, message } = errorMessages[name];
     res.status(status).json({ message });
   } else {
+    console.log(err);
     // Если для ошибки нет определенного текста и статуса
     res.status(500).json({ message: 'На сервере произошла ошибка' });
   }
