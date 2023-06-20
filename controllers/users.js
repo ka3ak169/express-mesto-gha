@@ -4,20 +4,22 @@ const User = require('../models/user');
 const {
   UNAUTHORIZED, BAD_REQUEST, NOT_FOUND, INTERNAL_SERVER_ERROR,
 } = require('../utils/constants');
-const { getGwtToken } = require('../utils/jwt');
+const getGwtToken = require('../utils/jwt');
+
+// console.log(getGwtToken);
 
 const SALT_ROUNDS = 10;
 require('dotenv').config();
 
 const login = (req, res) => {
   const { email, password } = req.body;
-  console.log(req.body);
+  // console.log(req.body);
 
   // Проверка наличия email и пароля в запросе
   if (!email || !password) {
     return res.status(UNAUTHORIZED).send({ message: 'Неправильные почта или пароль' });
   }
-
+  // console.log(password);
   return User.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) {
@@ -30,7 +32,7 @@ const login = (req, res) => {
           if (!isMatch) {
             return res.status(UNAUTHORIZED).send({ message: 'Неправильные почта или пароль' });
           }
-
+          // console.log(user);
           // // Добавление данных пользователя в req
           req.user = user;
 
@@ -45,9 +47,9 @@ const login = (req, res) => {
             sameSite: 'none',
           }).send({ message: 'Успешная авторизация', user: req.user, token });
         })
-        .catch(() => res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' }));
+        .catch(() => res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка1' }));
     })
-    .catch(() => res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' }));
+    .catch(() => res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка2' }));
 };
 
 const getUsers = (req, res) => {
