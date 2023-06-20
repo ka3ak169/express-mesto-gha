@@ -1,5 +1,5 @@
 const bcrypt = require('bcrypt');
-const validator = require('validator');
+// const validator = require('validator');
 const User = require('../models/user');
 const {
   UNAUTHORIZED, BAD_REQUEST, NOT_FOUND, INTERNAL_SERVER_ERROR,
@@ -32,7 +32,6 @@ const login = (req, res) => {
           if (!isMatch) {
             return res.status(UNAUTHORIZED).send({ message: 'Неправильные почта или пароль' });
           }
-          // console.log(user);
           // // Добавление данных пользователя в req
           req.user = user;
 
@@ -47,9 +46,9 @@ const login = (req, res) => {
             sameSite: 'none',
           }).send({ message: 'Успешная авторизация', user: req.user, token });
         })
-        .catch(() => res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка1' }));
+        .catch(() => res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' }));
     })
-    .catch(() => res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка2' }));
+    .catch(() => res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' }));
 };
 
 const getUsers = (req, res) => {
@@ -91,15 +90,12 @@ const getUserInformation = (req, res) => {
 };
 
 const createUser = (req, res) => {
-  console.log(req.body);
-
   const {
     name, about, avatar, email, password,
   } = req.body;
 
   return bcrypt.hash(password, SALT_ROUNDS, (err, hash) => {
     if (err) {
-      console.log(err);
       return res.status(500).send({ message: 'Произошла ошибка' });
     }
 
@@ -114,8 +110,6 @@ const createUser = (req, res) => {
         if (error.name === 'ValidationError') {
           return res.status(400).send({ message: 'Переданы некорректные данные пользователя' });
         }
-      console.log(error);
-
         return res.status(500).send({ message: 'Произошла ошибка' });
       });
   });

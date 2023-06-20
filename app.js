@@ -29,13 +29,13 @@ const validationSchema = {
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-    avatar: Joi.string().uri(),
+    avatar: Joi.string().regex(/^[A-Za-z0-9\-._~:/?#[\]@$&'()*+,;=%]+$/).uri({ allowRelative: true }),
     email: Joi.string().required().email(),
     password: Joi.string().required().min(8),
   }),
 };
 
-app.post('/signin', login);
+app.post('/signin', celebrate(validationSchema), login);
 app.post('/signup', celebrate(validationSchema), createUser);
 
 // Подключение к серверу MongoDB
