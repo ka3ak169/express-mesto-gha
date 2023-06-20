@@ -2,6 +2,8 @@
 
 // eslint-disable-next-line no-unused-vars
 const errorHandler = (err, req, res, next) => {
+  console.log('345');
+  console.log(err);
   // Определение текста и статуса для различных типов ошибок
   const errorMessages = {
     BadRequestError: { status: 400, message: 'Некорректный запрос' },

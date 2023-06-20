@@ -22,9 +22,6 @@ app.use(express.json());
 
 app.use(cookieParser());
 
-// обработчики ошибок
-app.use(errors()); // обработчик ошибок celebrate
-
 // Обработка URL-кодированных данных
 app.use(express.urlencoded({ extended: true }));
 
@@ -50,10 +47,29 @@ mongoose.connect('mongodb://127.0.0.1:27017/mestodb', {
 app.use(userRouter);
 app.use(cardRouter);
 
-app.use((req, res, next) => {
-  res.status(404).json({ message: 'Запрашиваемый ресурс не найден' });
+// app.use((req, res, next) => {
+//   res.status(404).json({ message: 'Запрашиваемый ресурс не найден' });
 
-  next();
+//   next();
+// });
+
+// обработчики ошибок
+app.use(errors()); // обработчик ошибок celebrate
+
+// Централизованный обработчик ошибок
+app.use((err, req, res, next) => {
+  // console.log('123');
+  // console.log(err);
+  if (err && err.isJoi) {
+    console.log('Ошибка валидации:', err.details);
+
+    const { statusCode, error, message, validation } = err;
+
+    res.status(400).json({ error: 'Ошибка валидации', details: err.details });
+  } else {
+    // Передаем остальные ошибки в errorMiddleware
+    next(err);
+  }
 });
 
 app.use(errorMiddleware);
