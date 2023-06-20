@@ -6,11 +6,12 @@ const {
 } = require('../utils/constants');
 const { getGwtToken } = require('../utils/jwt');
 
-const SALT_ROUNRDS = 10;
+const SALT_ROUNDS = 10;
 require('dotenv').config();
 
 const login = (req, res) => {
   const { email, password } = req.body;
+  console.log(req.body);
 
   // Проверка наличия email и пароля в запросе
   if (!email || !password) {
@@ -88,23 +89,16 @@ const getUserInformation = (req, res) => {
 };
 
 const createUser = (req, res) => {
+  console.log(req.body);
+
   const {
     name, about, avatar, email, password,
   } = req.body;
 
-  // Валидация email
-  if (!validator.isEmail(email)) {
-    return res.status(BAD_REQUEST).send({ message: 'Некорректный формат email' });
-  }
-
-  // Валидация avatar
-  if (!validator.isURL(avatar)) {
-    return res.status(BAD_REQUEST).send({ message: 'Некорректный формат ссылки на аватар' });
-  }
-
-  return bcrypt.hash(password, SALT_ROUNRDS, (err, hash) => {
+  return bcrypt.hash(password, SALT_ROUNDS, (err, hash) => {
     if (err) {
-      return res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' });
+      console.log(err);
+      return res.status(500).send({ message: 'Произошла ошибка' });
     }
 
     return User.create({
@@ -112,11 +106,13 @@ const createUser = (req, res) => {
     })
       .then((user) => res.status(200).send({ data: user }))
       .catch((error) => {
-        if (error.name === 'ValidationError') {
-          res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные пользователя' });
-        } else {
-          res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' });
+        if (error.code === 11000 && error.keyPattern && error.keyPattern.email === 1) {
+          return res.status(409).send({ message: 'Пользователь с таким email уже существует' });
         }
+        if (error.name === 'ValidationError') {
+          return res.status(400).send({ message: 'Переданы некорректные данные пользователя' });
+        }
+        return res.status(500).send({ message: 'Произошла ошибка' });
       });
   });
 };
