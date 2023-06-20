@@ -99,8 +99,11 @@ const createUser = (req, res) => {
       return res.status(500).send({ message: 'Произошла ошибка' });
     }
 
-    return User.create({ name, about, avatar, email, password: hash })
+    return User.create({
+      name, about, avatar, email, password: hash,
+    })
       .then((user) => {
+        // eslint-disable-next-line no-shadow
         const { password, ...userData } = user.toObject();
         return res.status(200).send({ user: userData });
       })

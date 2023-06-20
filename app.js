@@ -58,12 +58,13 @@ app.use(errors()); // обработчик ошибок celebrate
 
 // Централизованный обработчик ошибок
 app.use((err, req, res, next) => {
-  // console.log('123');
-  // console.log(err);
   if (err && err.isJoi) {
     console.log('Ошибка валидации:', err.details);
 
-    const { statusCode, error, message, validation } = err;
+    const {
+      // eslint-disable-next-line no-unused-vars
+      statusCode, error, message, validation,
+    } = err;
 
     res.status(400).json({ error: 'Ошибка валидации', details: err.details });
   } else {
