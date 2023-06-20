@@ -99,10 +99,11 @@ const createUser = (req, res) => {
       return res.status(500).send({ message: 'Произошла ошибка' });
     }
 
-    return User.create({
-      name, about, avatar, email, password: hash,
-    })
-      .then((user) => res.status(200).send({ data: user }))
+    return User.create({ name, about, avatar, email, password: hash })
+      .then((user) => {
+        const { password, ...userData } = user.toObject();
+        return res.status(200).send({ user: userData });
+      })
       .catch((error) => {
         if (error.code === 11000 && error.keyPattern && error.keyPattern.email === 1) {
           return res.status(409).send({ message: 'Пользователь с таким email уже существует' });
