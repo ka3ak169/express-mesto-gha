@@ -16,9 +16,17 @@ const userValidation = celebrate({
   },
 });
 
+const updateUserProfileValidation = celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().min(2).max(30),
+    about: Joi.string().min(2).max(30),
+    avatar: Joi.string().uri(),
+  }),
+});
+
 router.get('/users', authMiddleware, getUsers);
 
-router.patch('/users/me', authMiddleware, updateUsersProfile);
+router.patch('/users/me', authMiddleware, updateUserProfileValidation, updateUsersProfile);
 
 router.get('/users/me', authMiddleware, getUserInformation);
 
