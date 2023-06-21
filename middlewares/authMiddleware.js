@@ -16,7 +16,8 @@ module.exports = async (req, res, next) => {
   const token = authorization.replace('Bearer ', '');
 
   try {
-    const payload = jwt.verify(token, process.env.JWT_SECRET);
+    // const payload = jwt.verify(token, process.env.JWT_SECRET);
+    const payload = jwt.verify(token, 'super_secret_key');
     req.user = payload; // Записываем пейлоуд в объект запроса
     next();
   } catch (error) {
