@@ -18,14 +18,20 @@ const cardValidation = celebrate({
   }),
 });
 
+const cardIdValidation = celebrate({
+  params: Joi.object().keys({
+    cardId: Joi.string().hex().length(24),
+  }),
+});
+
 router.get('/cards', authMiddleware, getCards);
 
 router.post('/cards', authMiddleware, cardValidation, postCards);
 
-router.delete('/cards/:cardId', authMiddleware, deleteCards);
+router.delete('/cards/:cardId', authMiddleware, cardIdValidation, deleteCards);
 
-router.put('/cards/:cardId/likes', authMiddleware, addCardLike);
+router.put('/cards/:cardId/likes', authMiddleware, cardIdValidation, addCardLike);
 
-router.delete('/cards/:cardId/likes', authMiddleware, deleteCardLike);
+router.delete('/cards/:cardId/likes', authMiddleware, cardIdValidation, deleteCardLike);
 
 module.exports = router;
