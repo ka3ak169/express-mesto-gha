@@ -29,7 +29,7 @@ const validationSchema = {
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-    avatar: Joi.string().regex(/^[A-Za-z0-9\-._~:/?#[\]@$&'()*+,;=%]+$/).uri({ allowRelative: true }),
+    avatar: Joi.string().regex(/^(http|https):\/\/(www\.)?[A-Za-z0-9\-._~:/?#[\]@$&'()*+,;=%]+$/).uri({ allowRelative: true }),
     email: Joi.string().required().email(),
     password: Joi.string().required().min(8),
   }),

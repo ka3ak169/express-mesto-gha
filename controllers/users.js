@@ -1,3 +1,5 @@
+/* eslint-disable no-shadow */
+/* eslint-disable no-param-reassign */
 const bcrypt = require('bcrypt');
 // const validator = require('validator');
 const User = require('../models/user');
@@ -89,32 +91,32 @@ const getUserInformation = (req, res) => {
     .catch((err) => res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка', error: err }));
 };
 
-const createUser = (req, res) => {
+const createUser = (req, res, next) => {
   const {
     name, about, avatar, email, password,
   } = req.body;
 
-  return bcrypt.hash(password, SALT_ROUNDS, (err, hash) => {
+  bcrypt.hash(password, SALT_ROUNDS, (err, hash) => {
     if (err) {
-      return res.status(500).send({ message: 'Произошла ошибка' });
+      next(err);
+      return;
     }
 
-    return User.create({
+    User.create({
       name, about, avatar, email, password: hash,
     })
       .then((user) => {
-        // eslint-disable-next-line no-shadow
         const { password, ...userData } = user.toObject();
-        return res.status(200).send({ user: userData });
+        res.status(200).send({ user: userData });
       })
       .catch((error) => {
-        if (error.code === 11000 && error.keyPattern && error.keyPattern.email === 1) {
-          return res.status(409).send({ message: 'Пользователь с таким email уже существует' });
+        if (error.code === 11000) {
+          error.message = 'Пользователь с таким email уже существует';
+          error.name = 'ConflictError';
+        } else if (error.name === 'ValidationError') {
+          error.message = 'Переданы некорректные данные пользователя';
         }
-        if (error.name === 'ValidationError') {
-          return res.status(400).send({ message: 'Переданы некорректные данные пользователя' });
-        }
-        return res.status(500).send({ message: 'Произошла ошибка' });
+        next(error);
       });
   });
 };

@@ -1,9 +1,5 @@
-// errorMiddleware.js
-
-// eslint-disable-next-line no-unused-vars
+/* eslint-disable no-unused-vars */
 const errorHandler = (err, req, res, next) => {
-  console.log('345');
-  console.log(err);
   // Определение текста и статуса для различных типов ошибок
   const errorMessages = {
     BadRequestError: { status: 400, message: 'Некорректный запрос' },
@@ -18,11 +14,13 @@ const errorHandler = (err, req, res, next) => {
 
   if (name in errorMessages) {
     const { status, message } = errorMessages[name];
-    res.status(status).json({ message });
+    res.status(status).send({ message });
+  } else if (err.code === 11000) {
+    // Обработка ошибки дублирования email
+    res.status(409).send({ message: 'Пользователь с таким email уже существует' });
   } else {
     console.log(err);
-    // Если для ошибки нет определенного текста и статуса
-    res.status(500).json({ message: 'На сервере произошла ошибка' });
+    res.status(500).send({ message: 'На сервере произошла ошибка' });
   }
 };
 
