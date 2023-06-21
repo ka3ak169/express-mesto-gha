@@ -89,7 +89,8 @@ const getUserById = (req, res, next) => {
       if (!user) {
         const error = new Error();
         error.statusCode = 404;
-        throw error;
+        next(error);
+        return;
       }
 
       req.user = user;
