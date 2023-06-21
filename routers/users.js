@@ -33,6 +33,6 @@ router.get('/users/me', authMiddleware, getUserInformation);
 
 router.get('/users/:userId', authMiddleware, userValidation, getUserById);
 
-router.patch('/users/me/avatar', authMiddleware, updateUsersAvatar);
+router.patch('/users/me/avatar', authMiddleware, updateUserProfileValidation, updateUsersAvatar);
 
 module.exports = router;
