@@ -1,27 +1,27 @@
 /* eslint-disable no-unused-vars */
 const errorHandler = (err, req, res, next) => {
-  // Определение текста и статуса для различных типов ошибок
-  const errorMessages = {
-    BadRequestError: { status: 400, message: 'Некорректный запрос' },
-    UnauthorizedError: { status: 401, message: 'Необходима авторизация' },
-    ForbiddenError: { status: 403, message: 'Доступ запрещен' },
-    NotFoundError: { status: 404, message: 'Ресурс не найден' },
-    ConflictError: { status: 409, message: 'Конфликт данных' },
-  };
+  console.log(err.statusCode);
+  let statusCode = 500;
+  let message = 'На сервере произошла ошибка';
 
-  // Получение информации об ошибке
-  const { name } = err;
-
-  if (name in errorMessages) {
-    const { status, message } = errorMessages[name];
-    res.status(status).send({ message });
-  } else if (err.code === 11000) {
-    // Обработка ошибки дублирования email
-    res.status(409).send({ message: 'Пользователь с таким email уже существует' });
-  } else {
-    console.log(err);
-    res.status(500).send({ message: 'На сервере произошла ошибка' });
+  if (err.statusCode === 400) {
+    statusCode = 400;
+    message = err.message || 'Некорректный запрос';
+  } else if (err.statusCode === 401) {
+    statusCode = 401;
+    message = err.message || 'Необходима авторизация';
+  } else if (err.statusCode === 403) {
+    statusCode = 403;
+    message = err.message || 'Доступ запрещен';
+  } else if (err.statusCode === 404) {
+    statusCode = 404;
+    message = err.message || 'Пользователь не найден';
+  } else if (err.statusCode === 409) {
+    statusCode = 409;
+    message = err.message || 'Конфликт данных';
   }
+
+  res.status(statusCode).json({ message });
 };
 
 module.exports = errorHandler;
