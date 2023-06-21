@@ -59,9 +59,12 @@ const login = (req, res, next) => {
           next(error);
         });
     })
+    // .catch((error) => {
+    //   error.message = 'Перданы2';
+    //   error.statusCode = BAD_REQUEST;
+    //   next(error);
+    // });
     .catch((error) => {
-      error.message = 'Перданы2';
-      error.statusCode = BAD_REQUEST;
       next(error);
     });
 };
