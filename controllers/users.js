@@ -41,9 +41,9 @@ const login = (req, res, next) => {
           req.user = user;
           // console.log(req.user);
 
-          // const id = user.id.toString();
+          const id = user._id.toString();
           // console.log(id);
-          // const token = getGwtToken(id);
+          const token = getGwtToken(id);
           // console.log(token);
 
           // res.cookie('jwt', token, {
@@ -51,7 +51,7 @@ const login = (req, res, next) => {
           //   secure: true,
           //   sameSite: 'none',
           // }).send({ message: 'Успешная авторизация', user: req.user, token });
-          res.send({ message: 'Успешная авторизация' });
+          res.send({ message: 'Успешная авторизация', token });
         })
         // .catch((error) => {
         //   error.message = 'Перданы1';
