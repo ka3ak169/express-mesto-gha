@@ -83,6 +83,7 @@ const getUsers = (req, res, next) => {
 
 const getUserById = (req, res, next) => {
   const { userId } = req.params;
+  console.log(req.params);
 
   User.findById(userId)
     .then((user) => {
@@ -94,7 +95,7 @@ const getUserById = (req, res, next) => {
       }
 
       req.user = user;
-      next();
+      res.send({ user });
     })
     .catch(next);
 };
