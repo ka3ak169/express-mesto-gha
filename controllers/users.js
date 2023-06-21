@@ -1,15 +1,11 @@
-/* eslint-disable no-undef */
 /* eslint-disable no-shadow */
 /* eslint-disable no-param-reassign */
 const bcrypt = require('bcrypt');
-// const validator = require('validator');
 const User = require('../models/user');
 const {
   UNAUTHORIZED, BAD_REQUEST, NOT_FOUND, INTERNAL_SERVER_ERROR,
 } = require('../utils/constants');
 const getGwtToken = require('../utils/jwt');
-
-// console.log(getGwtToken);
 
 const SALT_ROUNDS = 10;
 require('dotenv').config();
@@ -147,7 +143,7 @@ const updateUsersProfile = (req, res, next) => {
   const { name, about } = req.body;
 
   User.findByIdAndUpdate(
-    req.user._id,
+    req.user.id,
     { name, about },
     {
       new: true, // обработчик then получит на вход обновлённую запись
@@ -174,7 +170,7 @@ const updateUsersAvatar = (req, res, next) => {
   const { avatar } = req.body;
 
   User.findByIdAndUpdate(
-    req.user._id,
+    req.user.id,
     { avatar },
     {
       new: true,

@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 const jwt = require('jsonwebtoken');
 const { UNAUTHORIZED } = require('../utils/constants');
 require('dotenv').config();
@@ -6,23 +7,20 @@ module.exports = async (req, res, next) => {
   const { authorization } = req.headers;
 
   if (!authorization || !authorization.startsWith('Bearer ')) {
-    return res
-      .status(UNAUTHORIZED)
-      .send({ message: 'Необходима авторизация' });
+    const error = new Error('Необходима авторизация');
+    error.statusCode = UNAUTHORIZED;
+    return next(error);
   }
 
-  // извлечём токен
+  // Извлечение токена
   const token = authorization.replace('Bearer ', '');
 
-  let payload;
-
   try {
-    payload = jwt.verify(token, process.env.JWT_SECRET);
+    const payload = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = payload; // Записываем пейлоуд в объект запроса
+    next();
   } catch (error) {
-    return res.status(UNAUTHORIZED).send({ message: 'Недействительный авторизационный токен' });
+    error.statusCode = UNAUTHORIZED;
+    next(error);
   }
-
-  req.user = payload; // записываем пейлоуд в объект запроса
-
-  return next();
 };

@@ -1,97 +1,123 @@
+/* eslint-disable no-param-reassign */
 const Card = require('../models/card');
 const {
   BAD_REQUEST, NOT_FOUND, FORBIDDEN, INTERNAL_SERVER_ERROR,
 } = require('../utils/constants');
 
-const getCards = (req, res) => {
+const getCards = (req, res, next) => {
   Card.find({})
     .then((cards) => res.send(cards))
-    .catch(() => res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' }));
-};
-
-const postCards = (req, res) => {
-  const { name, link } = req.body;
-
-  Card.create({ name, link })
-    .then((card) => res.status(200).send({ data: card }))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(BAD_REQUEST).send({ message: 'Переданы некорректные данные карточки' });
-      } else {
-        res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' });
-      }
+    .catch((error) => {
+      error.statusCode = INTERNAL_SERVER_ERROR;
+      error.message = 'Произошла ошибка';
+      next(error);
     });
 };
 
-const deleteCards = (req, res) => {
+const postCards = (req, res, next) => {
+  const { name, link } = req.body;
+  const owner = req.user.id;
+
+  Card.create({ name, link, owner })
+    .then((card) => res.status(200).send({ data: card }))
+    .catch((error) => {
+      if (error.name === 'ValidationError') {
+        error.statusCode = BAD_REQUEST;
+        error.message = 'Переданы некорректные данные карточки';
+      } else {
+        error.statusCode = INTERNAL_SERVER_ERROR;
+        error.message = 'Произошла ошибка';
+      }
+      next(error);
+    });
+};
+
+const deleteCards = (req, res, next) => {
   const { cardId } = req.params;
-  const userId = req.user._id;
+  const userId = req.user.id;
 
   Card.findById(cardId)
     .then((card) => {
       if (!card) {
-        return res.status(NOT_FOUND).send({ message: 'Такой карточки не существует' });
+        const error = new Error('Такой карточки не существует');
+        error.statusCode = NOT_FOUND;
+        next(error); // Передача ошибки обработчику ошибок
+        return;
       }
 
       // Проверка, является ли текущий пользователь владельцем карточки
       if (card.owner && card.owner.toString() !== userId) {
-        return res.status(FORBIDDEN).send({ message: 'Доступ запрещен' });
+        const error = new Error('Доступ запрещен');
+        error.statusCode = FORBIDDEN;
+        next(error); // Передача ошибки обработчику ошибок
+        return;
       }
 
       // Удаление карточки
-      return Card.findByIdAndRemove(cardId)
+      Card.findByIdAndRemove(cardId)
         .then((deletedCard) => res.send(deletedCard))
-        .catch(() => res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' }));
+        .catch((error) => next(error));
     })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        return res.status(BAD_REQUEST).send({ message: 'Некорректный формат ID карточки' });
-      }
-      return res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' });
-    });
+    .catch((error) => next(error));
 };
 
-const addCardLike = (req, res) => {
+const addCardLike = (req, res, next) => {
   const { cardId } = req.params;
 
   Card.findByIdAndUpdate(
     cardId,
-    { $addToSet: { likes: req.user._id } },
+    { $addToSet: { likes: req.user.id } },
     { new: true },
   )
     .then((card) => {
       if (!card) {
-        return res.status(NOT_FOUND).send({ message: 'Карточка с указанным id не найдена' });
+        const error = new Error('Карточка с указанным id не найдена');
+        error.statusCode = NOT_FOUND;
+        next(error); // Передача ошибки обработчику ошибок
+        return;
       }
-      return res.status(200).send({ data: card });
+      res.status(200).send({ data: card });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return res.status(BAD_REQUEST).send({ message: 'Некорректный формат ID карточки' });
+        const error = new Error('Некорректный формат ID карточки');
+        error.statusCode = BAD_REQUEST;
+        next(error);
+      } else {
+        const error = new Error('Произошла ошибка');
+        error.statusCode = INTERNAL_SERVER_ERROR;
+        next(error);
       }
-      return res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' });
     });
 };
 
-const deleteCardLike = (req, res) => {
+const deleteCardLike = (req, res, next) => {
   const { cardId } = req.params;
 
   Card.findByIdAndUpdate(
     cardId,
-    { $pull: { likes: req.user._id } }, // убрать _id из массива
+    { $pull: { likes: req.user.id } },
     { new: true },
   )
     .then((card) => {
       if (!card) {
-        return res.status(NOT_FOUND).send({ message: 'Карточка с таким id не найдена' });
+        const error = new Error('Карточка с таким id не найдена');
+        error.statusCode = NOT_FOUND;
+        next(error); // Передача ошибки обработчику ошибок
+        return;
       }
-      return res.status(200).send({ data: card });
+      res.status(200).send({ data: card });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        return res.status(BAD_REQUEST).send({ message: 'Некорректный формат ID карточки' });
+        const error = new Error('Некорректный формат ID карточки');
+        error.statusCode = BAD_REQUEST;
+        next(error);
+      } else {
+        const error = new Error('Произошла ошибка');
+        error.statusCode = INTERNAL_SERVER_ERROR;
+        next(error);
       }
-      return res.status(INTERNAL_SERVER_ERROR).send({ message: 'Произошла ошибка' });
     });
 };
 

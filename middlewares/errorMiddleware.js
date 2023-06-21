@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 const errorHandler = (err, req, res, next) => {
-  console.log(err.statusCode);
+  console.log(err);
   let statusCode = 500;
   let message = 'На сервере произошла ошибка';
 
