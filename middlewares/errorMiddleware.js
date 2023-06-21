@@ -2,7 +2,7 @@
 const errorHandler = (err, req, res, next) => {
   console.log(err);
   let statusCode = 500;
-  let message = 'На сервере произошла ошибка';
+  let message = 'На сервере произошла ошибка1';
 
   if (err.statusCode === 400) {
     statusCode = 400;
