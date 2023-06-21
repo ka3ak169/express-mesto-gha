@@ -9,11 +9,18 @@ require('dotenv').config();
 const userRouter = require('./routers/users');
 const cardRouter = require('./routers/cards');
 
+const {
+  login,
+  createUser,
+} = require('./controllers/users');
+
 const { PORT = 3000 } = process.env;
 
 const app = express();
 // Обработка JSON-данных
 app.use(express.json());
+
+app.use(cookieParser());
 
 // Обработка URL-кодированных данных
 app.use(express.urlencoded({ extended: true }));

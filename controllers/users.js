@@ -137,9 +137,9 @@ const updateUsersProfile = (req, res, next) => {
     req.user.id,
     { name, about },
     {
-      new: true,
-      runValidators: true,
-      upsert: false,
+      new: true, // обработчик then получит на вход обновлённую запись
+      runValidators: true, // данные будут валидированы перед изменением
+      upsert: false, // если пользователь не найден, он будет создан
     },
   )
     .then((user) => {
@@ -190,9 +190,11 @@ const updateUsersAvatar = (req, res, next) => {
 };
 
 module.exports = {
+  login,
   getUsers,
   getUserById,
-  postUsers,
+  getUserInformation,
+  createUser,
   updateUsersProfile,
   updateUsersAvatar,
 };

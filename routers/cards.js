@@ -4,7 +4,11 @@ const { celebrate, Joi } = require('celebrate');
 const authMiddleware = require('../middlewares/authMiddleware');
 
 const {
-  getCards, postCards, deleteCards, addCardLike, deleteCardLike,
+  getCards,
+  postCards,
+  deleteCards,
+  addCardLike,
+  deleteCardLike,
 } = require('../controllers/cards');
 
 const cardValidation = celebrate({

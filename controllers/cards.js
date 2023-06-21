@@ -1,6 +1,8 @@
 /* eslint-disable no-param-reassign */
 const Card = require('../models/card');
-const { BAD_REQUEST, NOT_FOUND, INTERNAL_SERVER_ERROR } = require('../utils/constants');
+const {
+  BAD_REQUEST, NOT_FOUND, FORBIDDEN, INTERNAL_SERVER_ERROR,
+} = require('../utils/constants');
 
 const getCards = (req, res, next) => {
   Card.find({})
@@ -34,7 +36,7 @@ const deleteCards = (req, res, next) => {
   const { cardId } = req.params;
   const userId = req.user.id;
 
-  Card.findByIdAndRemove(cardId)
+  Card.findById(cardId)
     .then((card) => {
       if (!card) {
         const error = new Error('Такой карточки не существует');
@@ -76,7 +78,6 @@ const addCardLike = (req, res, next) => {
       }
       res.send({ data: card });
     })
-    // eslint-disable-next-line consistent-return
     .catch((err) => {
       if (err.name === 'CastError') {
         const error = new Error('Некорректный формат ID карточки');
@@ -107,7 +108,6 @@ const deleteCardLike = (req, res, next) => {
       }
       res.status(200).send({ data: card });
     })
-    // eslint-disable-next-line consistent-return
     .catch((err) => {
       if (err.name === 'CastError') {
         const error = new Error('Некорректный формат ID карточки');
