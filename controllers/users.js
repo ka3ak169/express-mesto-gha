@@ -53,9 +53,12 @@ const login = (req, res, next) => {
           // }).send({ message: 'Успешная авторизация', user: req.user, token });
           res.send({ message: 'Успешная авторизация' });
         })
+        // .catch((error) => {
+        //   error.message = 'Перданы1';
+        //   error.statusCode = NOT_FOUND;
+        //   next(error);
+        // });
         .catch((error) => {
-          error.message = 'Перданы1';
-          error.statusCode = NOT_FOUND;
           next(error);
         });
     })
