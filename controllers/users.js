@@ -40,7 +40,7 @@ const login = (req, res, next) => {
 
           req.user = user;
 
-          const id = user._id.toString();
+          const id = user.id.toString();
           const token = getGwtToken(id);
 
           // res.cookie('jwt', token, {
