@@ -50,11 +50,13 @@ const login = (req, res, next) => {
           }).send({ message: 'Успешная авторизация', user: req.user, token });
         })
         .catch((error) => {
+          error.message = 'Перданы1';
           error.statusCode = INTERNAL_SERVER_ERROR;
           next(error);
         });
     })
     .catch((error) => {
+      error.message = 'Перданы2';
       error.statusCode = INTERNAL_SERVER_ERROR;
       next(error);
     });
@@ -98,7 +100,6 @@ const getUserInformation = (req, res, next) => {
         error.statusCode = NOT_FOUND;
         throw error;
       }
-
       res.send({ data: user }); // Отправляем ответ
     })
     .catch((error) => {
