@@ -13,12 +13,6 @@ require('dotenv').config();
 const login = (req, res, next) => {
   const { email, password } = req.body;
 
-  // if (!email || !password) {
-  //   const error = new Error('Неправильные почта или пароль');
-  //   error.statusCode = UNAUTHORIZED;
-  //   throw error;
-  // }
-
   User.findOne({ email })
     .select('+password')
     .then((user) => {
@@ -37,37 +31,23 @@ const login = (req, res, next) => {
             next(error);
             return;
           }
-          // console.log(user);
+
           req.user = user;
-          // console.log(req.user);
 
           const id = user._id.toString();
-          // console.log(id);
           const token = getGwtToken(id);
-          // console.log(token);
 
-          // res.cookie('jwt', token, {
-          //   httpOnly: true,
-          //   secure: true,
-          //   sameSite: 'none',
-          // }).send({ message: 'Успешная авторизация', user: req.user, token });
           res.send({ message: 'Успешная авторизация', token });
         })
         .catch((error) => {
           error.statusCode = INTERNAL_SERVER_ERROR;
           next(error);
         });
-      // .catch((error) => {
-      //   next(error);
-      // });
     })
     .catch((error) => {
       error.statusCode = INTERNAL_SERVER_ERROR;
       next(error);
     });
-  // .catch((error) => {
-  //   next(error);
-  // });
 };
 
 const getUsers = (req, res, next) => {
@@ -110,7 +90,7 @@ const getUserInformation = (req, res, next) => {
         error.statusCode = NOT_FOUND;
         throw error;
       }
-      res.send({ data: user }); // Отправляем ответ
+      res.send({ data: user });
     })
     .catch((error) => {
       error.statusCode = INTERNAL_SERVER_ERROR;

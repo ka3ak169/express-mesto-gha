@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable no-useless-escape */
 const express = require('express');
 const mongoose = require('mongoose');
@@ -7,8 +8,6 @@ const errorMiddleware = require('./middlewares/errorMiddleware');
 require('dotenv').config();
 const userRouter = require('./routers/users');
 const cardRouter = require('./routers/cards');
-
-// const { errors } = require('celebrate');
 
 const {
   login,
@@ -48,11 +47,6 @@ mongoose.connect('mongodb://127.0.0.1:27017/mestodb', {
 app.use(userRouter);
 app.use(cardRouter);
 
-// // Обработка несуществующего маршрута
-// app.use((req, res) => {
-//   res.status(404).json({ message: 'Запрашиваемый ресурс не найден' });
-// });
-
 app.use((req, res, next) => {
   res.status(404).json({ message: 'Запрашиваемый ресурс не найден' });
 
@@ -68,7 +62,6 @@ app.use((err, req, res, next) => {
     console.log('Ошибка валидации:', err.details);
 
     const {
-      // eslint-disable-next-line no-unused-vars
       statusCode, error, message, validation,
     } = err;
 
