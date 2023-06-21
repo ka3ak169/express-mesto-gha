@@ -38,7 +38,7 @@ const login = (req, res, next) => {
             return;
           }
           // console.log(user);
-          // req.user = user;
+          req.user = user;
           // console.log(req.user);
 
           // const id = user.id.toString();
