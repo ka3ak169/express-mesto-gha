@@ -26,11 +26,14 @@ const errorHandler = (err, req, res, next) => {
   // res.status(statusCode).json({ message });
 
 
-  if (err.statusCode) {
-    res.status(err.statusCode).send({ message: err.message });
-  } else {
-    res.status(505).send({ message: 'На сервере произошла ошибка8' });
-  }
+  // if (err.statusCode) {
+  //   res.status(err.statusCode).send({ message: err.message });
+  // } else {
+  //   res.status(505).send({ message: 'На сервере произошла ошибка8' });
+  // }
+
+  res.status(err.statusCode).send({ message: err.message });
+
 };
 
 module.exports = errorHandler;
