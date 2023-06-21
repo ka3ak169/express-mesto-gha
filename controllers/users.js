@@ -43,21 +43,22 @@ const login = (req, res, next) => {
           const id = user._id.toString();
           const token = getGwtToken(id);
 
-          res.cookie('jwt', token, {
-            httpOnly: true,
-            secure: true,
-            sameSite: 'none',
-          }).send({ message: 'Успешная авторизация', user: req.user, token });
+          // res.cookie('jwt', token, {
+          //   httpOnly: true,
+          //   secure: true,
+          //   sameSite: 'none',
+          // }).send({ message: 'Успешная авторизация', user: req.user, token });
+          res.send({ message: 'Успешная авторизация', user: req.user, token });
         })
         .catch((error) => {
           error.message = 'Перданы1';
-          error.statusCode = INTERNAL_SERVER_ERROR;
+          error.statusCode = NOT_FOUND;
           next(error);
         });
     })
     .catch((error) => {
       error.message = 'Перданы2';
-      error.statusCode = INTERNAL_SERVER_ERROR;
+      error.statusCode = BAD_REQUEST;
       next(error);
     });
 };
