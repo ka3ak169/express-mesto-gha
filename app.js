@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-escape */
 const express = require('express');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
@@ -29,7 +30,7 @@ const validationSchema = {
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-    avatar: Joi.string().regex(/^(http|https):\/\/(www\.)?[A-Za-z0-9\-._~:/?#[\]@$&'()*+,;=%]+$/).uri({ allowRelative: true }),
+    avatar: Joi.string().pattern(/^(https?:\/\/)(www\.)?((\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})|([a-zA-Z0-9][a-zA-Z0-9\-]{0,61}[a-zA-Z0-9]\.)+[a-zA-Z]{2,6})(:[0-9]{1,5})?(\/[A-Za-z0-9\-._~:/?#[\]@!$&'()*+,;=]*)?$/).uri({ allowRelative: true }),
     email: Joi.string().required().email(),
     password: Joi.string().required().min(8),
   }),

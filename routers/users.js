@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-escape */
 const router = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
 const authMiddleware = require('../middlewares/authMiddleware');
@@ -20,7 +21,7 @@ const updateUserProfileValidation = celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-    avatar: Joi.string().uri(),
+    avatar: Joi.string().pattern(/^(https?:\/\/)(www\.)?((\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})|([a-zA-Z0-9][a-zA-Z0-9\-]{0,61}[a-zA-Z0-9]\.)+[a-zA-Z]{2,6})(:[0-9]{1,5})?(\/[A-Za-z0-9\-._~:/?#[\]@!$&'()*+,;=]*)?$/),
   }),
 });
 
