@@ -76,7 +76,7 @@ const addCardLike = (req, res, next) => {
         next(error); // Передача ошибки обработчику ошибок
         return;
       }
-      res.status(200).send({ data: card });
+      res.send({ data: card });
     })
     .catch((err) => {
       if (err.name === 'CastError') {

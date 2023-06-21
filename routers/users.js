@@ -13,7 +13,7 @@ const {
 
 const userValidation = celebrate({
   params: {
-    userId: Joi.string().required().hex(),
+    userId: Joi.string().length(24).hex().required(),
   },
 });
 

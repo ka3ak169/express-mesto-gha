@@ -13,11 +13,11 @@ require('dotenv').config();
 const login = (req, res, next) => {
   const { email, password } = req.body;
 
-  if (!email || !password) {
-    const error = new Error('Неправильные почта или пароль');
-    error.statusCode = UNAUTHORIZED;
-    throw error;
-  }
+  // if (!email || !password) {
+  //   const error = new Error('Неправильные почта или пароль');
+  //   error.statusCode = UNAUTHORIZED;
+  //   throw error;
+  // }
 
   User.findOne({ email })
     .select('+password')
@@ -46,12 +46,12 @@ const login = (req, res, next) => {
           const token = getGwtToken(id);
           // console.log(token);
 
-          res.cookie('jwt', token, {
-            httpOnly: true,
-            secure: true,
-            sameSite: 'none',
-          }).send({ message: 'Успешная авторизация', user: req.user, token });
-          // res.send({ message: 'Успешная авторизация', token });
+          // res.cookie('jwt', token, {
+          //   httpOnly: true,
+          //   secure: true,
+          //   sameSite: 'none',
+          // }).send({ message: 'Успешная авторизация', user: req.user, token });
+          res.send({ message: 'Успешная авторизация', token });
         })
         .catch((error) => {
           error.statusCode = INTERNAL_SERVER_ERROR;
