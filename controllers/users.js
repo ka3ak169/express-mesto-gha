@@ -37,14 +37,14 @@ const login = (req, res, next) => {
             next(error);
             return;
           }
-          console.log(user);
-          req.user = user;
-          console.log(req.user);
+          // console.log(user);
+          // req.user = user;
+          // console.log(req.user);
 
-          const id = user.id.toString();
-          console.log(id);
-          const token = getGwtToken(id);
-          console.log(token);
+          // const id = user.id.toString();
+          // console.log(id);
+          // const token = getGwtToken(id);
+          // console.log(token);
 
           // res.cookie('jwt', token, {
           //   httpOnly: true,
