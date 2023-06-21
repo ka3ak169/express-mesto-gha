@@ -12,7 +12,8 @@ const authPayload = (req, res, next) => {
 
   try {
     // Верификация токена и извлечение пейлоада
-    const payload = jwt.verify(token, process.env.JWT_SECRET);
+    // const payload = jwt.verify(token, process.env.JWT_SECRET);
+    const payload = jwt.verify(token, 'super_secret_key');
 
     // Добавление пейлоада токена в объект запроса
     req.user = payload;
