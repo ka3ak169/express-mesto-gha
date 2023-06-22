@@ -2,6 +2,7 @@
 const router = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
 const authMiddleware = require('../middlewares/authMiddleware');
+const { regLink } = require('../utils/constants');
 
 const {
   getCards,
@@ -14,7 +15,7 @@ const {
 const cardValidation = celebrate({
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
-    link: Joi.string().required().pattern(/^(https?:\/\/)(www\.)?([a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*))/),
+    link: Joi.string().required().pattern(regLink),
   }),
 });
 

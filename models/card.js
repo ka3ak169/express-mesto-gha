@@ -1,5 +1,6 @@
 /* eslint-disable no-useless-escape */
 const mongoose = require('mongoose');
+const { regLink } = require('../utils/constants');
 
 const cardSchema = new mongoose.Schema({
   name: {
@@ -12,7 +13,7 @@ const cardSchema = new mongoose.Schema({
     type: String,
     required: true,
     validate: {
-      validator: (value) => /^(https?:\/\/)(www\.)?([a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*))/.test(value),
+      validator: (value) => regLink.test(value),
       message: 'Некорректный формат ссылки',
     },
   },

@@ -2,6 +2,7 @@
 const router = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
 const authMiddleware = require('../middlewares/authMiddleware');
+const { regAvatar } = require('../utils/constants');
 
 const {
   getUsers,
@@ -26,7 +27,7 @@ const updateNameAndAboutValidation = celebrate({
 
 const updateAvatarValidation = celebrate({
   body: Joi.object().keys({
-    avatar: Joi.string().pattern(/^(https?:\/\/)(www\.)?((\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})|([a-zA-Z0-9][a-zA-Z0-9\-]{0,61}[a-zA-Z0-9]\.)+[a-zA-Z]{2,6})(:[0-9]{1,5})?(\/[A-Za-z0-9\-._~:/?#[\]@!$&'()*+,;=]*)?$/),
+    avatar: Joi.string().pattern(regAvatar),
   }),
 });
 
