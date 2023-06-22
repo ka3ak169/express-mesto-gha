@@ -64,8 +64,12 @@ const getUsers = (req, res, next) => {
       res.send(users);
     })
     .catch((error) => {
-      if (error.name === 'InternalServerError') {
-        next(new InternalServerError('Произошла ошибка'));
+      if (error.name === 'UnauthorizedError') {
+        const unauthorizedError = new UnauthorizedError('Недействительный токен');
+        next(unauthorizedError);
+      } else if (error.name === 'InternalServerError') {
+        const internalServerError = new InternalServerError('Произошла ошибка');
+        next(internalServerError);
       } else {
         next(error);
       }
