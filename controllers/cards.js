@@ -1,15 +1,9 @@
 /* eslint-disable no-param-reassign */
 const Card = require('../models/card');
 const {
-  BAD_REQUEST, NOT_FOUND, FORBIDDEN, INTERNAL_SERVER_ERROR,
-} = require('../utils/constants');
-
-const {
   BadRequestError,
-  UnauthorizedError,
   ForbiddenError,
   NotFoundError,
-  ConflictError,
   InternalServerError,
 } = require('../utils/errors');
 
