@@ -17,22 +17,27 @@ const userValidation = celebrate({
   },
 });
 
-const updateUserProfileValidation = celebrate({
+const updateNameAndAboutValidation = celebrate({
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
+  }),
+});
+
+const updateAvatarValidation = celebrate({
+  body: Joi.object().keys({
     avatar: Joi.string().pattern(/^(https?:\/\/)(www\.)?((\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})|([a-zA-Z0-9][a-zA-Z0-9\-]{0,61}[a-zA-Z0-9]\.)+[a-zA-Z]{2,6})(:[0-9]{1,5})?(\/[A-Za-z0-9\-._~:/?#[\]@!$&'()*+,;=]*)?$/),
   }),
 });
 
 router.get('/users', authMiddleware, getUsers);
 
-router.patch('/users/me', authMiddleware, updateUserProfileValidation, updateUsersProfile);
+router.patch('/users/me', authMiddleware, updateNameAndAboutValidation, updateUsersProfile);
 
 router.get('/users/me', authMiddleware, getUserInformation);
 
 router.get('/users/:userId', authMiddleware, userValidation, getUserById);
 
-router.patch('/users/me/avatar', authMiddleware, updateUserProfileValidation, updateUsersAvatar);
+router.patch('/users/me/avatar', authMiddleware, updateAvatarValidation, updateUsersAvatar);
 
 module.exports = router;

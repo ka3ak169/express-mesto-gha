@@ -4,13 +4,24 @@ const {
   BAD_REQUEST, NOT_FOUND, FORBIDDEN, INTERNAL_SERVER_ERROR,
 } = require('../utils/constants');
 
+const {
+  BadRequestError,
+  UnauthorizedError,
+  ForbiddenError,
+  NotFoundError,
+  ConflictError,
+  InternalServerError,
+} = require('../utils/errors');
+
 const getCards = (req, res, next) => {
   Card.find({})
     .then((cards) => res.send(cards))
     .catch((error) => {
-      error.statusCode = INTERNAL_SERVER_ERROR;
-      error.message = 'Произошла ошибка';
-      next(error);
+      if (error.name === 'InternalServerError') {
+        next(new InternalServerError('Произошла ошибка'));
+      } else {
+        next(error);
+      }
     });
 };
 
@@ -19,14 +30,14 @@ const postCards = (req, res, next) => {
   const owner = req.user.id;
 
   Card.create({ name, link, owner })
-    .then((card) => res.status(200).send({ data: card }))
+    .then((card) => {
+      res.status(200).send({ data: card });
+    })
     .catch((error) => {
       if (error.name === 'ValidationError') {
-        error.statusCode = BAD_REQUEST;
-        error.message = 'Переданы некорректные данные карточки';
+        next(new BadRequestError('Переданы некорректные данные карточки'));
       } else {
-        error.statusCode = INTERNAL_SERVER_ERROR;
-        error.message = 'Произошла ошибка';
+        next(new InternalServerError('Произошла ошибка'));
       }
       next(error);
     });
@@ -39,21 +50,15 @@ const deleteCards = (req, res, next) => {
   Card.findById(cardId)
     .then((card) => {
       if (!card) {
-        const error = new Error('Такой карточки не существует');
-        error.statusCode = NOT_FOUND;
-        next(error); // Передача ошибки обработчику ошибок
+        next(new NotFoundError('Такой карточки не существует'));
         return;
       }
 
-      // Проверка, является ли текущий пользователь владельцем карточки
       if (card.owner && card.owner.toString() !== userId) {
-        const error = new Error('Доступ запрещен');
-        error.statusCode = FORBIDDEN;
-        next(error); // Передача ошибки обработчику ошибок
+        next(new ForbiddenError('Доступ запрещен'));
         return;
       }
 
-      // Удаление карточки
       Card.findByIdAndRemove(cardId)
         .then((deletedCard) => res.send(deletedCard))
         .catch((error) => next(error));
@@ -71,22 +76,16 @@ const addCardLike = (req, res, next) => {
   )
     .then((card) => {
       if (!card) {
-        const error = new Error('Карточка с указанным id не найдена');
-        error.statusCode = NOT_FOUND;
-        next(error); // Передача ошибки обработчику ошибок
+        next(new NotFoundError('Карточка с указанным id не найдена'));
         return;
       }
       res.send({ data: card });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        const error = new Error('Некорректный формат ID карточки');
-        error.statusCode = BAD_REQUEST;
-        next(error);
+        next(new BadRequestError('Некорректный формат ID карточки'));
       } else {
-        const error = new Error('Произошла ошибка');
-        error.statusCode = INTERNAL_SERVER_ERROR;
-        next(error);
+        next(err);
       }
     });
 };
@@ -101,22 +100,16 @@ const deleteCardLike = (req, res, next) => {
   )
     .then((card) => {
       if (!card) {
-        const error = new Error('Карточка с таким id не найдена');
-        error.statusCode = NOT_FOUND;
-        next(error); // Передача ошибки обработчику ошибок
-        return;
+        next(new NotFoundError('Карточка с указанным id не найдена'));
+      } else {
+        res.send({ data: card });
       }
-      res.status(200).send({ data: card });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        const error = new Error('Некорректный формат ID карточки');
-        error.statusCode = BAD_REQUEST;
-        next(error);
+        next(new BadRequestError('Некорректный формат ID карточки'));
       } else {
-        const error = new Error('Произошла ошибка');
-        error.statusCode = INTERNAL_SERVER_ERROR;
-        next(error);
+        next(err);
       }
     });
 };

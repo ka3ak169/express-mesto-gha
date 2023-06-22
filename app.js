@@ -48,29 +48,29 @@ app.use(userRouter);
 app.use(cardRouter);
 
 app.use((req, res, next) => {
-  res.status(404).json({ message: 'Запрашиваемый ресурс не найден' });
-
-  next();
+  const error = new Error('Запрашиваемый ресурс не найден');
+  error.statusCode = 404;
+  next(error);
 });
 
 // обработчики ошибок
 app.use(errors()); // обработчик ошибок celebrate
 
-// Централизованный обработчик ошибок
-app.use((err, req, res, next) => {
-  if (err && err.isJoi) {
-    console.log('Ошибка валидации:', err.details);
+// // Централизованный обработчик ошибок
+// app.use((err, req, res, next) => {
+//   if (err && err.isJoi) {
+//     console.log('Ошибка валидации:', err.details);
 
-    const {
-      statusCode, error, message, validation,
-    } = err;
+//     const {
+//       statusCode, error, message, validation,
+//     } = err;
 
-    res.status(400).json({ error: 'Ошибка валидации', details: err.details });
-  } else {
-    // Передаем остальные ошибки в errorMiddleware
-    next(err);
-  }
-});
+//     res.status(400).json({ error: 'Ошибка валидации', details: err.details });
+//   } else {
+//     // Передаем остальные ошибки в errorMiddleware
+//     next(err);
+//   }
+// });
 
 app.use(errorMiddleware);
 
