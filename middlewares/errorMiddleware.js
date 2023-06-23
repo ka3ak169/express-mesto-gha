@@ -1,11 +1,11 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable max-len */
 
-const BadRequestError = require('../utils/BadRequestError');
-const NotFoundError = require('../utils/NotFoundError');
-const UnauthorizedError = require('../utils/UnauthorizedError');
-const ConflictError = require('../utils/ConflictError');
-const ForbiddenError = require('../utils/ForbiddenError');
+const { BadRequestError } = require('../utils/BadRequestError');
+const { NotFoundError } = require('../utils/NotFoundError');
+const { UnauthorizedError } = require('../utils/UnauthorizedError');
+const { ConflictError } = require('../utils/ConflictError');
+const { ForbiddenError } = require('../utils/ForbiddenError');
 
 const errorMiddleware = (err, req, res, next) => {
   console.log(err);

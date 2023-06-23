@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
 const { celebrate, Joi, errors } = require('celebrate');
 const errorMiddleware = require('./middlewares/errorMiddleware');
-const NotFoundError = require('./utils/NotFoundError');
+const { NotFoundError } = require('./utils/NotFoundError');
 require('dotenv').config();
 const userRouter = require('./routers/users');
 const cardRouter = require('./routers/cards');

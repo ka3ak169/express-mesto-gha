@@ -3,10 +3,10 @@
 const bcrypt = require('bcrypt');
 const User = require('../models/user');
 
-const BadRequestError = require('../utils/BadRequestError');
-const NotFoundError = require('../utils/NotFoundError');
-const UnauthorizedError = require('../utils/UnauthorizedError');
-const ConflictError = require('../utils/ConflictError');
+const { BadRequestError } = require('../utils/BadRequestError');
+const { NotFoundError } = require('../utils/NotFoundError');
+const { UnauthorizedError } = require('../utils/UnauthorizedError');
+const { ConflictError } = require('../utils/ConflictError');
 
 const getJwtToken = require('../utils/jwt');
 

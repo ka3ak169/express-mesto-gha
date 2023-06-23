@@ -1,6 +1,6 @@
 /* eslint-disable consistent-return */
 const jwt = require('jsonwebtoken');
-const UnauthorizedError = require('../utils/UnauthorizedError');
+const { UnauthorizedError } = require('../utils/UnauthorizedError');
 
 require('dotenv').config();
 
