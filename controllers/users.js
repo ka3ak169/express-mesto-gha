@@ -3,13 +3,10 @@
 const bcrypt = require('bcrypt');
 const User = require('../models/user');
 
-const {
-  BadRequestError,
-  UnauthorizedError,
-  NotFoundError,
-  ConflictError,
-  InternalServerError,
-} = require('../utils/errors');
+const BadRequestError = require('../utils/BadRequestError');
+const NotFoundError = require('../utils/NotFoundError');
+const UnauthorizedError = require('../utils/UnauthorizedError');
+const ConflictError = require('../utils/ConflictError');
 
 const getJwtToken = require('../utils/jwt');
 
@@ -41,21 +38,9 @@ const login = (req, res, next) => {
 
           res.send({ message: 'Успешная авторизация', token });
         })
-        .catch((error) => {
-          if (error.name === 'InternalServerError') {
-            next(new InternalServerError('Произошла ошибка'));
-          } else {
-            next(error);
-          }
-        });
+        .catch((error) => next(error));
     })
-    .catch((error) => {
-      if (error.name === 'InternalServerError') {
-        next(new InternalServerError('Произошла ошибка'));
-      } else {
-        next(error);
-      }
-    });
+    .catch((error) => next(error));
 };
 
 const getUsers = (req, res, next) => {
@@ -65,11 +50,7 @@ const getUsers = (req, res, next) => {
     })
     .catch((error) => {
       if (error.name === 'UnauthorizedError') {
-        const unauthorizedError = new UnauthorizedError('Недействительный токен');
-        next(unauthorizedError);
-      } else if (error.name === 'InternalServerError') {
-        const internalServerError = new InternalServerError('Произошла ошибка');
-        next(internalServerError);
+        next(new UnauthorizedError('Недействительный токен'));
       } else {
         next(error);
       }
@@ -89,7 +70,7 @@ const getUserById = (req, res, next) => {
       req.user = user;
       res.send({ user });
     })
-    .catch(next);
+    .catch((error) => next(error));
 };
 
 const getUserInformation = (req, res, next) => {
@@ -104,9 +85,7 @@ const getUserInformation = (req, res, next) => {
 
       res.send({ data: user });
     })
-    .catch((error) => {
-      next(error);
-    });
+    .catch((error) => next(error));
 };
 
 const createUser = (req, res, next) => {
@@ -116,7 +95,7 @@ const createUser = (req, res, next) => {
 
   bcrypt.hash(password, SALT_ROUNDS, (err, hash) => {
     if (err) {
-      next(new InternalServerError('Произошла ошибка при хешировании пароля'));
+      next((err) => next(err));
       return;
     }
 
@@ -125,7 +104,7 @@ const createUser = (req, res, next) => {
     })
       .then((user) => {
         const { password, ...userData } = user.toObject();
-        res.status(200).send({ user: userData });
+        res.send({ user: userData });
       })
       .catch((error) => {
         if (error.code === 11000) {

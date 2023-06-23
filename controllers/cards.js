@@ -1,22 +1,14 @@
 /* eslint-disable no-param-reassign */
 const Card = require('../models/card');
-const {
-  BadRequestError,
-  ForbiddenError,
-  NotFoundError,
-  InternalServerError,
-} = require('../utils/errors');
+
+const BadRequestError = require('../utils/BadRequestError');
+const ForbiddenError = require('../utils/ForbiddenError');
+const NotFoundError = require('../utils/NotFoundError');
 
 const getCards = (req, res, next) => {
   Card.find({})
     .then((cards) => res.send(cards))
-    .catch((error) => {
-      if (error.name === 'InternalServerError') {
-        next(new InternalServerError('Произошла ошибка'));
-      } else {
-        next(error);
-      }
-    });
+    .catch((error) => next(error));
 };
 
 const postCards = (req, res, next) => {
@@ -25,15 +17,14 @@ const postCards = (req, res, next) => {
 
   Card.create({ name, link, owner })
     .then((card) => {
-      res.status(200).send({ data: card });
+      res.send({ data: card });
     })
     .catch((error) => {
       if (error.name === 'ValidationError') {
         next(new BadRequestError('Переданы некорректные данные карточки'));
       } else {
-        next(new InternalServerError('Произошла ошибка'));
+        next(error);
       }
-      next(error);
     });
 };
 

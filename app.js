@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
 const { celebrate, Joi, errors } = require('celebrate');
 const errorMiddleware = require('./middlewares/errorMiddleware');
+const NotFoundError = require('./utils/NotFoundError');
 require('dotenv').config();
 const userRouter = require('./routers/users');
 const cardRouter = require('./routers/cards');
@@ -48,9 +49,7 @@ app.use(userRouter);
 app.use(cardRouter);
 
 app.use((req, res, next) => {
-  const error = new Error('Запрашиваемый ресурс не найден');
-  error.statusCode = 404;
-  next(error);
+  next(new NotFoundError('Запрашиваемый ресурс не найден'));
 });
 
 // обработчики ошибок

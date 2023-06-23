@@ -1,9 +1,11 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable max-len */
 
-const {
-  BadRequestError, UnauthorizedError, ForbiddenError, NotFoundError, ConflictError, InternalServerError,
-} = require('../utils/errors');
+const BadRequestError = require('../utils/BadRequestError');
+const NotFoundError = require('../utils/NotFoundError');
+const UnauthorizedError = require('../utils/UnauthorizedError');
+const ConflictError = require('../utils/ConflictError');
+const ForbiddenError = require('../utils/ForbiddenError');
 
 const errorMiddleware = (err, req, res, next) => {
   console.log(err);
@@ -26,9 +28,6 @@ const errorMiddleware = (err, req, res, next) => {
   } else if (err instanceof ConflictError) {
     statusCode = err.statusCode || statusCode;
     message = err.message || 'Конфликт данных';
-  } else if (err instanceof InternalServerError) {
-    statusCode = err.statusCode || statusCode;
-    message = err.message || 'Внутренняя ошибка сервера';
   }
 
   res.status(statusCode).send({ message });
