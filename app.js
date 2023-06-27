@@ -9,6 +9,7 @@ const { NotFoundError } = require('./utils/NotFoundError');
 require('dotenv').config();
 const userRouter = require('./routers/users');
 const cardRouter = require('./routers/cards');
+const { regAvatar } = require('./utils/constants');
 
 const {
   login,
@@ -30,7 +31,7 @@ const validationSchema = {
   body: Joi.object().keys({
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-    avatar: Joi.string().pattern(/^(https?:\/\/)(www\.)?((\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})|([a-zA-Z0-9][a-zA-Z0-9\-]{0,61}[a-zA-Z0-9]\.)+[a-zA-Z]{2,6})(:[0-9]{1,5})?(\/[A-Za-z0-9\-._~:/?#[\]@!$&'()*+,;=]*)?$/).uri({ allowRelative: true }),
+    avatar: Joi.string().pattern(regAvatar).uri({ allowRelative: true }),
     email: Joi.string().required().email(),
     password: Joi.string().required().min(8),
   }),
